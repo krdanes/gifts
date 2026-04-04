@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spiritual Gifts Assessment</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  font-family: -apple-system, system-ui, Arial;
+  max-width: 720px;
+  margin: auto;
+  padding: 20px;
+  background:#f5f7fb;
+}
+
+.card {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+button {
+  padding:10px 14px;
+  margin:5px;
+  border-radius:8px;
+  border:none;
+  background:#007bff;
+  color:white;
+  font-size:16px;
+}
+button.selected { background:#28a745; }
+
+.progress {
+  height:8px;
+  background:#ddd;
+  border-radius:6px;
+  margin-bottom:20px;
+}
+.progress-bar {
+  height:8px;
+  background:#007bff;
+  border-radius:6px;
+}
+
+.bar {
+  height:14px;
+  background:#28a745;
+  margin:6px 0;
+  border-radius:6px;
+}
+
+.small { font-size:14px; color:#666; }
+canvas { margin-top:20px; }
+</style>
+</head>
+
+<body>
+<div class="card" id="app"></div>
+
+<script>
+
+// ---------------- GIFTS ----------------
+const gifts = [
+"Leadership","Administration","Knowledge","Discernment","Wisdom",
+"Teaching","Exhortation","Service","Mercy","Hospitality",
+"Giving","Prophecy","Evangelism","Apostleship","Shepherding","Faith"
+];
+
+// ---------------- QUESTIONS (FULL - YOUR DATA) ----------------
+const q = [
+["Leadership","I take responsibility for guiding a group toward a clear outcome."],
+["Leadership","I step in when direction is lacking."],
+["Leadership","I make decisions that move people forward."],
+["Leadership","I feel accountable for group results."],
+["Leadership","I guide others through uncertainty."],
+["Leadership","I ensure progress is made."],
+["Leadership","I move people forward despite resistance."],
+["Leadership","I carry responsibility for outcomes."],
+
+["Administration","I recognize how people should be positioned for effectiveness."],
+["Administration","I see how roles and timing fit together."],
+["Administration","I organize people for best results."],
+["Administration","I notice when someone is in the wrong role."],
+["Administration","I align people and responsibilities effectively."],
+["Administration","I think about efficiency of people and flow."],
+["Administration","I coordinate efforts so they don’t conflict."],
+["Administration","I structure people and tasks for success."],
+
+["Knowledge","I recognize patterns others miss."],
+["Knowledge","I uncover deeper meaning through reflection."],
+["Knowledge","I see connections between ideas."],
+["Knowledge","I pursue deeper understanding of truth."],
+["Knowledge","I think deeply about concepts."],
+["Knowledge","I gain insight others overlook."],
+["Knowledge","I understand beyond surface-level explanations."],
+["Knowledge","I connect truths across contexts."],
+
+["Discernment","I sense when something is not right beneath the surface."],
+["Discernment","I detect motives others miss."],
+["Discernment","I distinguish truth from error."],
+["Discernment","I notice inconsistencies that reveal deeper issues."],
+["Discernment","I perceive underlying influences."],
+["Discernment","I recognize misalignment internally."],
+["Discernment","I identify what is truly happening."],
+["Discernment","I detect when something appears right but is not."],
+
+["Wisdom","I see the likely outcome of decisions."],
+["Wisdom","I recognize the best course of action."],
+["Wisdom","I understand timing of decisions."],
+["Wisdom","I help others avoid mistakes."],
+["Wisdom","I apply truth to real situations."],
+["Wisdom","I bring clarity in complex situations."],
+["Wisdom","I see long-term consequences."],
+["Wisdom","I recognize the right path forward."],
+
+["Teaching","I explain complex truth clearly."],
+["Teaching","I recognize misunderstanding quickly."],
+["Teaching","I simplify truth effectively."],
+["Teaching","I structure ideas for clarity."],
+["Teaching","I help others grasp difficult ideas."],
+["Teaching","I adjust explanations for others."],
+["Teaching","I focus on understanding, not just speaking."],
+["Teaching","I communicate truth clearly."],
+
+["Exhortation","I help others see hope when discouraged."],
+["Exhortation","I give people confidence to move forward."],
+["Exhortation","I encourage action despite fear."],
+["Exhortation","I help others keep going."],
+["Exhortation","I strengthen others internally."],
+["Exhortation","I motivate people toward growth."],
+["Exhortation","I help people overcome hesitation."],
+["Exhortation","I instill courage in others."],
+
+["Service","I take action when something needs to be done."],
+["Service","I notice tasks others overlook."],
+["Service","I follow through to completion."],
+["Service","I step in to help practically."],
+["Service","I focus on getting things done."],
+["Service","I support others through action."],
+["Service","I act quickly when needed."],
+["Service","I ensure tasks are completed."],
+
+["Mercy","I extend compassion when others fail."],
+["Mercy","I choose understanding over judgment."],
+["Mercy","I respond gently to mistakes."],
+["Mercy","I desire to forgive rather than condemn."],
+["Mercy","I show grace even when undeserved."],
+["Mercy","I restore rather than judge."],
+["Mercy","I respond with kindness in failure."],
+["Mercy","I reflect forgiveness in difficult situations."],
+
+["Hospitality","I open my home to others."],
+["Hospitality","I enjoy hosting gatherings."],
+["Hospitality","I make others feel welcome quickly."],
+["Hospitality","I create environments of belonging."],
+["Hospitality","I intentionally include others."],
+["Hospitality","I make people feel comfortable."],
+["Hospitality","I bring people together."],
+["Hospitality","I remove barriers to belonging."],
+
+["Giving","I find joy in giving resources."],
+["Giving","I give willingly rather than obligation."],
+["Giving","I am eager to give when I see need."],
+["Giving","I trust God when I give sacrificially."],
+["Giving","I see resources as shared."],
+["Giving","I look for opportunities to give."],
+["Giving","I recognize impactful giving opportunities."],
+["Giving","I see myself as a steward not owner."],
+
+["Prophecy","I feel compelled to speak truth from God."],
+["Prophecy","I speak when alignment is needed."],
+["Prophecy","I communicate truth with conviction."],
+["Prophecy","I feel burdened to speak what God shows."],
+["Prophecy","I address misalignment directly."],
+["Prophecy","I communicate beyond personal opinion."],
+["Prophecy","I speak truth even when difficult."],
+["Prophecy","I feel responsible to share God’s message."],
+
+["Evangelism","I am drawn to those who don’t know Christ."],
+["Evangelism","I initiate conversations about faith."],
+["Evangelism","I share the gospel naturally."],
+["Evangelism","I feel urgency for others to believe."],
+["Evangelism","I connect with non-believers easily."],
+["Evangelism","I help people move toward faith."],
+["Evangelism","I look for evangelism opportunities."],
+["Evangelism","I am energized by people coming to faith."],
+
+["Apostleship","I am drawn to start new works."],
+["Apostleship","I build where nothing exists."],
+["Apostleship","I establish foundations."],
+["Apostleship","I think beyond current systems."],
+["Apostleship","I strengthen developing works."],
+["Apostleship","I see big picture across groups."],
+["Apostleship","I help align multiple efforts."],
+["Apostleship","I create what others build on."],
+
+["Shepherding","I feel responsible for people’s growth."],
+["Shepherding","I stay committed over time."],
+["Shepherding","I notice when people drift."],
+["Shepherding","I protect others spiritually."],
+["Shepherding","I invest consistently in people."],
+["Shepherding","I guide long-term growth."],
+["Shepherding","I walk through seasons with people."],
+["Shepherding","I care for entrusted individuals."],
+
+["Faith","I trust God without seeing outcomes."],
+["Faith","I remain confident in uncertainty."],
+["Faith","I believe God will act."],
+["Faith","I stay steady when others doubt."],
+["Faith","I rely on God in unknown situations."],
+["Faith","I bring confidence to others."],
+["Faith","I remain stable under pressure."],
+["Faith","I hold onto trust consistently."]
+];
+
+// ---------------- SHUFFLE ----------------
+function shuffleBalanced(arr){
+  let grouped={}; gifts.forEach(g=>grouped[g]=[]);
+  arr.forEach(x=>grouped[x[0]].push(x));
+  let result=[];
+  for(let i=0;i<8;i++){
+    let keys=[...gifts].sort(()=>Math.random()-0.5);
+    keys.forEach(k=>{
+      if(grouped[k][i]) result.push(grouped[k][i]);
+    });
+  }
+  return result;
+}
+
+// ---------------- STATE ----------------
+let list=shuffleBalanced(q);
+let answers=new Array(list.length).fill(null);
+let i=0;
+
+// ---------------- DESCRIPTIONS ----------------
+const desc = {
+Leadership:"You guide people toward direction and outcomes.",
+Administration:"You organize and structure effectively.",
+Knowledge:"You understand deeper meaning and connections.",
+Discernment:"You sense truth beneath the surface.",
+Wisdom:"You apply truth to real situations.",
+Teaching:"You explain truth clearly.",
+Exhortation:"You encourage and strengthen others.",
+Service:"You meet practical needs.",
+Mercy:"You show compassion and forgiveness.",
+Hospitality:"You create welcoming environments.",
+Giving:"You share resources generously.",
+Prophecy:"You speak truth boldly.",
+Evangelism:"You lead others to faith.",
+Apostleship:"You start new works.",
+Shepherding:"You care for people long-term.",
+Faith:"You trust God consistently."
+};
+
+// ---------------- BIBLE ----------------
+const bible = {
+Leadership:"Nehemiah",
+Administration:"Joseph",
+Knowledge:"Paul",
+Discernment:"John",
+Wisdom:"Solomon",
+Teaching:"Ezra",
+Exhortation:"Barnabas",
+Service:"Martha",
+Mercy:"Good Samaritan",
+Hospitality:"Lydia",
+Giving:"Widow",
+Prophecy:"Elijah",
+Evangelism:"Philip",
+Apostleship:"Paul",
+Shepherding:"Peter",
+Faith:"Abraham"
+};
+
+// ---------------- SCRIPTURE ----------------
+
+const scripture = {
+Leadership:"Nehemiah 2:17-18",
+Administration:"Genesis 41:39-41",
+Knowledge:"1 Corinthians 12:8",
+Discernment:"1 John 4:1",
+Wisdom:"James 1:5",
+Teaching:"Romans 12:7",
+Exhortation:"Romans 12:8",
+Service:"Galatians 5:13",
+Mercy:"Luke 10:33-34",
+Hospitality:"1 Peter 4:9",
+Giving:"2 Corinthians 9:7",
+Prophecy:"1 Corinthians 14:3",
+Evangelism:"Acts 8:5-6",
+Apostleship:"Ephesians 4:11",
+Shepherding:"1 Peter 5:2-3",
+Faith:"Hebrews 11:1"
+};
+
+
+// ---------------- RENDER ----------------
+function render(){
+  if(i>=list.length) return results();
+
+  let p=Math.round((i/list.length)*100);
+
+  app.innerHTML=`
+  <h2>Spiritual Gifts Assessment</h2>
+
+  <div class="progress"><div class="progress-bar" style="width:${p}%"></div></div>
+
+  <p class="small">1 = Not like me | 5 = Very much like me</p>
+
+  <h3>${i+1}. ${list[i][1]}</h3>
+
+  ${[1,2,3,4,5].map(n=>`
+    <button class="${answers[i]===n?'selected':''}" onclick="ans(${n})">${n}</button>
+  `).join("")}
+
+  <div style="margin-top:10px;">${i>0?`<button onclick="back()">Back</button>`:""}</div>
+  `;
+}
+
+function ans(v){answers[i]=v;i++;render();}
+function back(){i--;render();}
+
+// ---------------- RESULTS ----------------
+function results(){
+
+  let scores={}; gifts.forEach(g=>scores[g]=0);
+  list.forEach((q,idx)=> scores[q[0]] += answers[idx]||0);
+
+  let sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  let top3 = sorted.slice(0,3);
+
+  app.innerHTML=`
+  <h2>Top 3 Gifts</h2>
+
+  ${top3.map(([g,v])=>`
+    <div>
+      <h3>${g} (${v})</h3>
+      <div class="small"><b>Biblical Character:</b> ${bible[g]}</div>
+      <p>${desc[g]}</p>
+      <div class="small"><b>Scripture:</b> ${scripture[g]}</div>
+    </div>
+  `).join("")}
+
+  <canvas id="barChart"></canvas>
+  <canvas id="radarChart"></canvas>
+
+  <button onclick="location.reload()">Restart</button>
+  `;
+
+  const labels = sorted.map(x=>x[0]);
+  const values = sorted.map(x=>x[1]);
+
+  new Chart(document.getElementById("barChart"),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Score',
+        data:values
+      }]
+    }
+  });
+
+  new Chart(document.getElementById("radarChart"),{
+    type:'radar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Score',
+        data:values
+      }]
+    }
+  });
+}
+
+render();
+
+</script>
+</body>
+</html>

@@ -3,397 +3,208 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spiritual Gifts Assessment</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body {
-  font-family: -apple-system, system-ui, Arial;
-  max-width: 720px;
-  margin: auto;
-  padding: 20px;
-  background:#f5f7fb;
-}
-
-.card {
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-}
-
-button {
-  padding:10px 14px;
-  margin:5px;
-  border-radius:8px;
-  border:none;
-  background:#007bff;
-  color:white;
-  font-size:16px;
-}
-button.selected { background:#28a745; }
-
-.progress {
-  height:8px;
-  background:#ddd;
-  border-radius:6px;
-  margin-bottom:20px;
-}
-.progress-bar {
-  height:8px;
-  background:#007bff;
-  border-radius:6px;
-}
-
-.bar {
-  height:14px;
-  background:#28a745;
-  margin:6px 0;
-  border-radius:6px;
-}
-
-.small { font-size:14px; color:#666; }
-canvas { margin-top:20px; }
+body {font-family:Arial;max-width:720px;margin:auto;padding:20px;background:#f5f7fb}
+button {padding:10px;margin:5px;border-radius:8px;border:none;background:#007bff;color:white}
+.selected {background:#28a745}
+.progress {height:8px;background:#ddd;border-radius:6px}
+.progress-bar {height:8px;background:#007bff;border-radius:6px}
+.small {font-size:14px;color:#666}
 </style>
 </head>
-
 <body>
-<div class="card" id="app"></div>
+<div id="app"></div>
 
 <script>
+const lvl1=[{gift:"Leadership",text:"I take responsibility for guiding a group toward a clear outcome."},{gift:"Leadership",text:"I step in when direction is lacking."},{gift:"Leadership",text:"I make decisions that move people forward."},{gift:"Leadership",text:"I feel responsible for the results of a group or effort."},{gift:"Leadership",text:"I guide others through uncertainty with clarity."},{gift:"Leadership",text:"I ensure progress continues despite obstacles."},{gift:"Leadership",text:"I move people forward even when there is resistance."},{gift:"Leadership",text:"I carry the weight of direction and outcomes for others."},{gift:"Administration",text:"I recognize how people should be positioned for maximum effectiveness."},{gift:"Administration",text:"I see how roles, timing, and responsibilities fit together."},{gift:"Administration",text:"I organize people in ways that improve overall results."},{gift:"Administration",text:"I notice when someone is not functioning in the right role."},{gift:"Administration",text:"I align people and responsibilities toward a common objective."},{gift:"Administration",text:"I think about how to improve flow and coordination among people."},{gift:"Administration",text:"I prevent conflicts by organizing roles and timing effectively."},{gift:"Administration",text:"I structure people and responsibilities for optimal outcomes."},{gift:"Knowledge",text:"I recognize patterns and connections others do not see."},{gift:"Knowledge",text:"I uncover deeper meaning through reflection and study."},{gift:"Knowledge",text:"I connect ideas across different topics and contexts."},{gift:"Knowledge",text:"I pursue deeper understanding beyond surface-level explanations."},{gift:"Knowledge",text:"I think deeply about concepts and underlying truth."},{gift:"Knowledge",text:"I gain insight that others may overlook."},{gift:"Knowledge",text:"I understand concepts at a deeper level than what is presented."},{gift:"Knowledge",text:"I integrate multiple truths into a clearer overall understanding."},{gift:"Discernment",text:"I sense when something is not right beneath the surface."},{gift:"Discernment",text:"I detect motives and intentions others may miss."},{gift:"Discernment",text:"I distinguish between what is true and what is misleading."},{gift:"Discernment",text:"I notice inconsistencies that reveal deeper issues."},{gift:"Discernment",text:"I perceive underlying influences affecting a situation."},{gift:"Discernment",text:"I recognize misalignment even when it is subtle."},{gift:"Discernment",text:"I identify what is truly happening beyond appearances."},{gift:"Discernment",text:"I detect when something appears right but is not."},{gift:"Wisdom",text:"I see the likely outcome of decisions before they are made."},{gift:"Wisdom",text:"I recognize the best course of action in complex situations."},{gift:"Wisdom",text:"I understand the right timing for decisions."},{gift:"Wisdom",text:"I help others avoid mistakes through practical insight."},{gift:"Wisdom",text:"I apply truth effectively to real-life situations."},{gift:"Wisdom",text:"I bring clarity when situations are complicated."},{gift:"Wisdom",text:"I recognize long-term consequences of choices."},{gift:"Wisdom",text:"I identify the most appropriate path forward."},{gift:"Teaching",text:"I explain complex truth in ways others can understand."},{gift:"Teaching",text:"I recognize when someone does not fully understand something."},{gift:"Teaching",text:"I simplify ideas without losing meaning."},{gift:"Teaching",text:"I organize information for clarity and comprehension."},{gift:"Teaching",text:"I help others grasp difficult concepts."},{gift:"Teaching",text:"I adjust explanations based on the listener."},{gift:"Teaching",text:"I focus on helping others truly understand, not just hear."},{gift:"Teaching",text:"I communicate truth in a structured and clear way."},{gift:"Exhortation",text:"I help others see hope when they feel discouraged."},{gift:"Exhortation",text:"I give people confidence to move forward."},{gift:"Exhortation",text:"I encourage action even when others feel fear."},{gift:"Exhortation",text:"I help people keep going when they want to stop."},{gift:"Exhortation",text:"I strengthen others internally with encouragement."},{gift:"Exhortation",text:"I motivate people toward growth and progress."},{gift:"Exhortation",text:"I help others overcome hesitation and doubt."},{gift:"Exhortation",text:"I instill courage that leads to forward movement."},{gift:"Service",text:"I take action when something needs to be done."},{gift:"Service",text:"I notice practical needs others overlook."},{gift:"Service",text:"I follow through until tasks are completed."},{gift:"Service",text:"I step in to help without being asked."},{gift:"Service",text:"I focus on getting things done efficiently."},{gift:"Service",text:"I support others through practical action."},{gift:"Service",text:"I respond quickly when help is needed."},{gift:"Service",text:"I ensure responsibilities are completed fully."},{gift:"Mercy",text:"I extend compassion when others fail or fall short."},{gift:"Mercy",text:"I choose understanding over judgment when others make mistakes."},{gift:"Mercy",text:"I respond gently when others struggle or fail."},{gift:"Mercy",text:"I desire to forgive rather than condemn."},{gift:"Mercy",text:"I show grace even when it is not deserved."},{gift:"Mercy",text:"I seek to restore rather than judge others."},{gift:"Mercy",text:"I respond with kindness in situations involving failure."},{gift:"Mercy",text:"I reflect forgiveness and compassion in difficult situations."},{gift:"Hospitality",text:"I open my home or space to others willingly."},{gift:"Hospitality",text:"I enjoy hosting and bringing people together."},{gift:"Hospitality",text:"I make people feel welcome quickly."},{gift:"Hospitality",text:"I create environments where people feel they belong."},{gift:"Hospitality",text:"I intentionally include those who may feel left out."},{gift:"Hospitality",text:"I make others feel comfortable and at ease."},{gift:"Hospitality",text:"I bring people together in meaningful ways."},{gift:"Hospitality",text:"I remove barriers so others feel accepted."},{gift:"Giving",text:"I find joy in giving my resources to meet needs."},{gift:"Giving",text:"I give willingly rather than out of obligation."},{gift:"Giving",text:"I am eager to give when I see a need."},{gift:"Giving",text:"I trust God as I give, even when it requires sacrifice."},{gift:"Giving",text:"I see my resources as something to be shared."},{gift:"Giving",text:"I look for opportunities to give, not just respond when asked."},{gift:"Giving",text:"I recognize where giving will have the greatest impact."},{gift:"Giving",text:"I see myself as a steward of resources rather than an owner."},{gift:"Prophecy",text:"I feel compelled to speak truth that aligns with God’s will."},{gift:"Prophecy",text:"I speak when correction or alignment is needed."},{gift:"Prophecy",text:"I communicate truth with conviction and clarity."},{gift:"Prophecy",text:"I feel a burden to share what God reveals."},{gift:"Prophecy",text:"I address misalignment directly rather than avoiding it."},{gift:"Prophecy",text:"I communicate truth beyond personal opinion."},{gift:"Prophecy",text:"I speak truth even when it is difficult."},{gift:"Prophecy",text:"I feel responsible to share truth for alignment."},{gift:"Evangelism",text:"I am drawn to people who do not know Christ."},{gift:"Evangelism",text:"I initiate conversations about faith naturally."},{gift:"Evangelism",text:"I share the message of the gospel clearly."},{gift:"Evangelism",text:"I feel urgency for others to come to faith."},{gift:"Evangelism",text:"I connect easily with those outside the faith."},{gift:"Evangelism",text:"I help others move toward belief in Christ."},{gift:"Evangelism",text:"I look for opportunities to share the gospel."},{gift:"Evangelism",text:"I am energized when others respond to faith."},{gift:"Apostleship",text:"I am drawn to start new works where none exist."},{gift:"Apostleship",text:"I build structures that others can grow from."},{gift:"Apostleship",text:"I establish strong foundations for new efforts."},{gift:"Apostleship",text:"I think beyond existing systems and structures."},{gift:"Apostleship",text:"I strengthen and guide developing works."},{gift:"Apostleship",text:"I see the big picture across multiple efforts."},{gift:"Apostleship",text:"I help align and connect different initiatives."},{gift:"Apostleship",text:"I create environments where new growth can happen."},{gift:"Shepherding",text:"I feel responsible for the spiritual growth of specific people over time."},{gift:"Shepherding",text:"I remain committed to people even when progress is slow."},{gift:"Shepherding",text:"I notice when someone is drifting before it becomes obvious."},{gift:"Shepherding",text:"I feel responsible to help others stay grounded in truth."},{gift:"Shepherding",text:"I invest in people consistently, not just when issues arise."},{gift:"Shepherding",text:"I guide others toward maturity over time."},{gift:"Shepherding",text:"I feel a burden to protect others from harmful influences."},{gift:"Shepherding",text:"I take responsibility for the well-being of those entrusted to me."},{gift:"Faith",text:"I trust God even when I cannot see how things will work out."},{gift:"Faith",text:"I remain confident when circumstances are uncertain."},{gift:"Faith",text:"I believe God will act even without visible evidence."},{gift:"Faith",text:"I stay steady when others begin to doubt."},{gift:"Faith",text:"I rely on God when outcomes are unclear."},{gift:"Faith",text:"I bring confidence to others through my trust in God."},{gift:"Faith",text:"I remain stable under pressure because of my belief."},{gift:"Faith",text:"I hold onto trust even when others struggle to do so."}];
+const lvl2=[{gift:"Administration",type:"Evidence",text:"Others have seen that I understand how to organize people, resources, and tasks in a way that works effectively"},{gift:"Apostleship",type:"Evidence",text:"Others have seen that I can start and establish new ministries or initiatives that continue to grow and develop"},{gift:"Discernment",type:"Evidence",text:"Others have affirmed my ability to sense what is true or not"},{gift:"Encouragement",type:"Evidence",text:"Others have told me that my words have helped them keep going or grow"},{gift:"Evangelism",type:"Evidence",text:"Others have seen people respond positively when I share my faith"},{gift:"Faith",type:"Evidence",text:"Others have seen me act with confidence in God even when the situation seems uncertain or unlikely"},{gift:"Giving",type:"Evidence",text:"Others have noticed and affirmed my generosity"},{gift:"Hospitality",type:"Evidence",text:"Others have expressed feeling welcomed and comfortable around me"},{gift:"Knowledge",type:"Evidence",text:"Others have recognized my ability to understand and explain deep truths"},{gift:"Leadership",type:"Evidence",text:"Others have affirmed my ability to lead or guide a group"},{gift:"Mercy",type:"Evidence",text:"Others have seen me move toward people who are messy, broken, or difficult to love rather than avoiding them"},{gift:"Prophecy",type:"Evidence",text:"Others have seen that I speak truth clearly and appropriately into situations where it is needed, even when it is difficult"},{gift:"Service",type:"Evidence",text:"Others have recognized my willingness to serve behind the scenes"},{gift:"Shepherding",type:"Evidence",text:"Others have seen that I take ongoing responsibility to care for and invest in specific people over time, helping them grow"},{gift:"Teaching",type:"Evidence",text:"Others have told me that I explain biblical truth in a clear and understandable way"},{gift:"Wisdom",type:"Evidence",text:"Others have seen that I bring clarity and direction in complex or uncertain situations"},{gift:"Administration",type:"Evidence",text:"People have relied on me to assign roles, coordinate efforts, and structure plans based on the strengths of those involved"},{gift:"Apostleship",type:"Evidence",text:"People have looked to me for insight and direction to help align ministries, leaders, or groups with what God is leading"},{gift:"Discernment",type:"Evidence",text:"People seek my perspective when unsure about a situation"},{gift:"Encouragement",type:"Evidence",text:"People often seek me out when they need encouragement or direction"},{gift:"Evangelism",type:"Evidence",text:"People affirm my ability to communicate the gospel clearly"},{gift:"Faith",type:"Evidence",text:"People have told me that my trust in God has strengthened their faith during difficult or uncertain situations"},{gift:"Giving",type:"Evidence",text:"People trust me to help meet needs when resources are required"},{gift:"Hospitality",type:"Evidence",text:"People often gather or feel at ease in environments I create"},{gift:"Knowledge",type:"Evidence",text:"People come to me for insight into complex spiritual topics"},{gift:"Leadership",type:"Evidence",text:"People naturally look to me for direction in group settings"},{gift:"Mercy",type:"Evidence",text:"People have told me they feel accepted and not judged by me, even when they have made mistakes or done wrong"},{gift:"Prophecy",type:"Evidence",text:"People have told me that what I said brought clarity, conviction, or encouragement that felt timely and aligned with God’s truth"},{gift:"Service",type:"Evidence",text:"People rely on me to help get things done"},{gift:"Shepherding",type:"Evidence",text:"People have trusted me to guide, support, and look after their spiritual well-being over time"},{gift:"Teaching",type:"Evidence",text:"People often come to me when they want help understanding Scripture"},{gift:"Wisdom",type:"Evidence",text:"People have relied on my guidance to help make important decisions or determine the best path forward"},{gift:"Administration",type:"Frequency",text:"I regularly think about how to organize people, resources, and tasks in a way that works effectively"},{gift:"Apostleship",type:"Frequency",text:"I regularly think about how to start, expand, or develop new ministries, groups, or initiatives"},{gift:"Discernment",type:"Frequency",text:"I regularly sense when something is right or wrong beneath the surface"},{gift:"Encouragement",type:"Frequency",text:"I regularly notice when others need encouragement or motivation"},{gift:"Evangelism",type:"Frequency",text:"I regularly look for opportunities to share my faith with others"},{gift:"Faith",type:"Frequency",text:"I regularly trust God and remain confident in Him even when situations seem uncertain or unlikely"},{gift:"Giving",type:"Frequency",text:"I regularly look for opportunities to give or support others financially"},{gift:"Hospitality",type:"Frequency",text:"I regularly create environments where others feel welcomed and comfortable"},{gift:"Knowledge",type:"Frequency",text:"I regularly seek to understand deeper spiritual or biblical truths"},{gift:"Leadership",type:"Frequency",text:"I regularly take initiative to guide or organize groups of people"},{gift:"Mercy",type:"Frequency",text:"I regularly find myself drawn toward people who are hurting, struggling, or difficult to love"},{gift:"Prophecy",type:"Frequency",text:"I regularly recognize when truth needs to be spoken into a situation and speak up appropriately"},{gift:"Service",type:"Frequency",text:"I regularly look for ways to help and support others in practical ways"},{gift:"Shepherding",type:"Frequency",text:"I regularly stay connected with and invest in the same people over time, helping them grow"},{gift:"Teaching",type:"Frequency",text:"I regularly find myself explaining spiritual or biblical concepts to others"},{gift:"Wisdom",type:"Frequency",text:"I regularly help others determine the best course of action in complex or uncertain situations"},{gift:"Administration",type:"Frequency",text:"I often consider how to assign roles and coordinate efforts based on the strengths of those involved"},{gift:"Apostleship",type:"Frequency",text:"I often find myself considering the big picture and how multiple people, leaders, or groups can be aligned and strengthened"},{gift:"Discernment",type:"Frequency",text:"I often evaluate situations carefully to determine truth or error"},{gift:"Encouragement",type:"Frequency",text:"I often speak up to strengthen or inspire others"},{gift:"Evangelism",type:"Frequency",text:"I often engage others in conversations about the gospel"},{gift:"Faith",type:"Frequency",text:"I often feel confident that God will act even when I cannot see how things will work out"},{gift:"Giving",type:"Frequency",text:"I often give willingly even when it requires sacrifice"},{gift:"Hospitality",type:"Frequency",text:"I often think about how to make others feel included and at ease"},{gift:"Knowledge",type:"Frequency",text:"I often reflect on and connect insights about Scripture or spiritual concepts"},{gift:"Leadership",type:"Frequency",text:"I often step into leadership roles when direction is needed"},{gift:"Mercy",type:"Frequency",text:"I often respond with compassion and understanding when others are quick to judge or withdraw"},{gift:"Prophecy",type:"Frequency",text:"I often speak truth into situations in a way that brings clarity, conviction, or encouragement"},{gift:"Service",type:"Frequency",text:"I often step in to assist with tasks without being asked"},{gift:"Shepherding",type:"Frequency",text:"I often feel responsible to guide, support, and check in on the well-being of specific people"},{gift:"Teaching",type:"Frequency",text:"I often look for opportunities to help others understand Scripture more clearly"},{gift:"Wisdom",type:"Frequency",text:"I often see how truth should be applied to real situations to guide decisions and direction"},{gift:"Administration",type:"Outcome",text:"Plans, processes, and efforts run smoothly, clearly, and effectively because of how I organize them"},{gift:"Apostleship",type:"Outcome",text:"New ministries, groups, or initiatives are started and continue to grow because of my involvement"},{gift:"Discernment",type:"Outcome",text:"Truth and error become clearer in situations because of my insight"},{gift:"Encouragement",type:"Outcome",text:"People feel strengthened, motivated, or renewed after interacting with me"},{gift:"Evangelism",type:"Outcome",text:"People come to understand or respond to the gospel when I share my faith"},{gift:"Faith",type:"Outcome",text:"Others grow in confidence and trust in God because of how I respond in situations"},{gift:"Giving",type:"Outcome",text:"Real needs are met because of my generosity"},{gift:"Hospitality",type:"Outcome",text:"People feel welcomed, comfortable, and valued in environments I create"},{gift:"Knowledge",type:"Outcome",text:"Others gain deeper understanding of spiritual or biblical truths through me"},{gift:"Leadership",type:"Outcome",text:"People follow direction and progress is made when I lead"},{gift:"Mercy",type:"Outcome",text:"People feel accepted, understood, and not judged when they are around me"},{gift:"Prophecy",type:"Outcome",text:"People experience clarity, conviction, or encouragement when I speak into situations"},{gift:"Service",type:"Outcome",text:"Tasks and responsibilities are completed effectively because of my help"},{gift:"Shepherding",type:"Outcome",text:"People grow spiritually and remain supported over time because of my care"},{gift:"Teaching",type:"Outcome",text:"People gain clear understanding of Scripture or spiritual truth when I explain it"},{gift:"Wisdom",type:"Outcome",text:"People make better decisions and choose the right path after receiving my guidance"},{gift:"Administration",type:"Outcome",text:"People are able to function in their strengths and work together effectively because of my coordination"},{gift:"Apostleship",type:"Outcome",text:"Leaders and groups become aligned and strengthened under my guidance"},{gift:"Discernment",type:"Outcome",text:"Others avoid mistakes or deception because of my perspective"},{gift:"Encouragement",type:"Outcome",text:"Others take positive action or move forward because of my encouragement"},{gift:"Evangelism",type:"Outcome",text:"Others are more open to spiritual conversations because of how I communicate"},{gift:"Faith",type:"Outcome",text:"People take steps of faith or trust God in ways they otherwise would not because of my example"},{gift:"Giving",type:"Outcome",text:"My giving enables others or ministries to move forward effectively"},{gift:"Hospitality",type:"Outcome",text:"Others feel included and at ease because of my intentional efforts"},{gift:"Knowledge",type:"Outcome",text:"People are able to connect and understand complex ideas more clearly because of my insights"},{gift:"Leadership",type:"Outcome",text:"Groups I lead tend to move toward clear goals and accomplish them"},{gift:"Mercy",type:"Outcome",text:"Those who are struggling or broken experience comfort, acceptance, and restoration through my presence"},{gift:"Prophecy",type:"Outcome",text:"Situations are addressed clearly and at the right time because I speak truth when it is needed"},{gift:"Service",type:"Outcome",text:"Others are freed up to focus on their priorities because I step in to assist"},{gift:"Shepherding",type:"Outcome",text:"Those I invest in feel guided, stable, and cared for in their spiritual journey"},{gift:"Teaching",type:"Outcome",text:"Others are able to apply biblical truth more accurately because of my explanations"},{gift:"Wisdom",type:"Outcome",text:"Complex situations become clearer and more manageable because of my input"},{gift:"Administration",type:"Effort",text:"Organizing people, resources, and tasks in a way that works effectively comes naturally to me"},{gift:"Apostleship",type:"Effort",text:"Thinking about starting and developing new ministries or initiatives comes naturally to me"},{gift:"Discernment",type:"Effort",text:"Recognizing what is true or false beneath the surface comes naturally to me"},{gift:"Encouragement",type:"Effort",text:"Encouraging and motivating others comes naturally to me in conversations"},{gift:"Evangelism",type:"Effort",text:"Talking about my faith and engaging others in spiritual conversations comes naturally to me"},{gift:"Faith",type:"Effort",text:"Trusting God and remaining confident in Him comes naturally to me, even in uncertain situations"},{gift:"Giving",type:"Effort",text:"Giving to meet the needs of others comes naturally to me without hesitation"},{gift:"Hospitality",type:"Effort",text:"Creating welcoming and comfortable environments for others comes naturally to me"},{gift:"Knowledge",type:"Effort",text:"Understanding deeper spiritual or biblical truths comes naturally to me"},{gift:"Leadership",type:"Effort",text:"Taking initiative to guide and direct others comes naturally to me"},{gift:"Mercy",type:"Effort",text:"Showing compassion and understanding toward others comes naturally to me, even in difficult situations"},{gift:"Prophecy",type:"Effort",text:"Recognizing when truth needs to be spoken into a situation comes naturally to me"},{gift:"Service",type:"Effort",text:"Helping and supporting others in practical ways comes naturally to me"},{gift:"Shepherding",type:"Effort",text:"Caring for and investing in specific people over time comes naturally to me"},{gift:"Teaching",type:"Effort",text:"Explaining biblical or spiritual truth comes naturally to me, even without extensive preparation"},{gift:"Wisdom",type:"Effort",text:"Seeing how truth should be applied to real situations comes naturally to me"},{gift:"Administration",type:"Cost",text:"I continue to coordinate and structure efforts even when situations are complex or demanding"},{gift:"Apostleship",type:"Cost",text:"I continue to invest in building and guiding new works even when it requires long-term effort"},{gift:"Discernment",type:"Cost",text:"I continue to evaluate situations carefully even when it requires patience and caution"},{gift:"Encouragement",type:"Cost",text:"I continue to encourage others even when I feel tired or discouraged myself"},{gift:"Evangelism",type:"Cost",text:"I continue to share my faith even when it is uncomfortable or not well received"},{gift:"Faith",type:"Cost",text:"I continue to trust God even when situations become difficult or outcomes are unclear"},{gift:"Giving",type:"Cost",text:"I continue to give even when it requires personal sacrifice"},{gift:"Hospitality",type:"Cost",text:"I continue to host and care for others even when it requires extra effort or planning"},{gift:"Knowledge",type:"Cost",text:"I continue to pursue and share insight even when it requires significant study or effort"},{gift:"Leadership",type:"Cost",text:"I continue leading even when it becomes stressful or demanding"},{gift:"Mercy",type:"Cost",text:"I continue to care for and support people even when it is emotionally draining or inconvenient"},{gift:"Prophecy",type:"Cost",text:"I continue to speak truth even when it is difficult or uncomfortable to do so"},{gift:"Service",type:"Cost",text:"I continue to serve even when my efforts go unnoticed or unappreciated"},{gift:"Shepherding",type:"Cost",text:"I continue to support and guide people even when it requires ongoing time and energy"},{gift:"Teaching",type:"Cost",text:"I continue helping others understand truth even when it requires extra time or effort"},{gift:"Wisdom",type:"Cost",text:"I continue to help others make wise decisions even when it requires time and careful thought"}];
+const explanations={"Faith": ["You trust God with confidence even when outcomes are uncertain.", "Others are strengthened and encouraged to trust God through your example.", "Abraham", "Hebrews 11:1"], "Mercy": ["You move toward people others avoid and show compassion without judgment.", "Others feel accepted, understood, and safe around you.", "Good Samaritan", "Luke 10:33-34"], "Wisdom": ["You apply truth and insight to real-life situations.", "Others make better decisions because of your guidance.", "Solomon", "James 1:5"], "Leadership": ["You guide people toward direction and progress.", "Groups move forward effectively under your leadership.", "Nehemiah", "Nehemiah 2:17-18"], "Teaching": ["You explain truth clearly and help others understand.", "Others gain clarity and grow in understanding.", "Ezra", "Romans 12:7"], "Encouragement": ["You strengthen and uplift others through your words.", "Others feel renewed and motivated because of you.", "Barnabas", "Romans 12:8"], "Giving": ["You generously share resources to meet needs.", "Others are supported and ministry advances through your giving.", "Widow", "2 Corinthians 9:7"], "Service": ["You meet practical needs with humility and action.", "Others are helped and supported through your service.", "Martha", "Galatians 5:13"], "Hospitality": ["You create welcoming and inclusive environments.", "Others feel valued and a sense of belonging.", "Lydia", "1 Peter 4:9"], "Knowledge": ["You understand deeper truths and insights.", "Others gain understanding through your insights.", "Paul", "1 Corinthians 12:8"], "Discernment": ["You recognize truth from error clearly.", "Others avoid mistakes and gain clarity through you.", "John", "1 John 4:1"], "Evangelism": ["You clearly communicate the message of faith.", "Others respond positively and move toward faith.", "Philip", "Acts 8:5-6"], "Apostleship": ["You start and build new works or ministries.", "Others are aligned and new initiatives grow through you.", "Paul", "Ephesians 4:11"], "Shepherding": ["You care for people consistently over time.", "Others feel guided, supported, and protected.", "Peter", "1 Peter 5:2-3"], "Administration": ["You organize people and systems effectively.", "Others function better because of your coordination.", "Joseph", "Genesis 41:39-41"]};
 
-// ---------------- GIFTS ----------------
-const gifts = [
-"Leadership","Administration","Knowledge","Discernment","Wisdom",
-"Teaching","Exhortation","Service","Mercy","Hospitality",
-"Giving","Prophecy","Evangelism","Apostleship","Shepherding","Faith"
-];
+let list=[],answers=[],i=0,level=1,topResults=[];
 
-// ---------------- QUESTIONS (FULL - YOUR DATA) ----------------
-const q = [
-/* LEADERSHIP */
-["Leadership","I take responsibility for guiding a group toward a clear outcome."],
-["Leadership","I step in when direction is lacking."],
-["Leadership","I make decisions that move people forward."],
-["Leadership","I feel responsible for the results of a group or effort."],
-["Leadership","I guide others through uncertainty with clarity."],
-["Leadership","I ensure progress continues despite obstacles."],
-["Leadership","I move people forward even when there is resistance."],
-["Leadership","I carry the weight of direction and outcomes for others."],
-
-/* ADMINISTRATION */
-["Administration","I recognize how people should be positioned for maximum effectiveness."],
-["Administration","I see how roles, timing, and responsibilities fit together."],
-["Administration","I organize people in ways that improve overall results."],
-["Administration","I notice when someone is not functioning in the right role."],
-["Administration","I align people and responsibilities toward a common objective."],
-["Administration","I think about how to improve flow and coordination among people."],
-["Administration","I prevent conflicts by organizing roles and timing effectively."],
-["Administration","I structure people and responsibilities for optimal outcomes."],
-
-/* KNOWLEDGE */
-["Knowledge","I recognize patterns and connections others do not see."],
-["Knowledge","I uncover deeper meaning through reflection and study."],
-["Knowledge","I connect ideas across different topics and contexts."],
-["Knowledge","I pursue deeper understanding beyond surface-level explanations."],
-["Knowledge","I think deeply about concepts and underlying truth."],
-["Knowledge","I gain insight that others may overlook."],
-["Knowledge","I understand concepts at a deeper level than what is presented."],
-["Knowledge","I integrate multiple truths into a clearer overall understanding."],
-
-/* DISCERNMENT */
-["Discernment","I sense when something is not right beneath the surface."],
-["Discernment","I detect motives and intentions others may miss."],
-["Discernment","I distinguish between what is true and what is misleading."],
-["Discernment","I notice inconsistencies that reveal deeper issues."],
-["Discernment","I perceive underlying influences affecting a situation."],
-["Discernment","I recognize misalignment even when it is subtle."],
-["Discernment","I identify what is truly happening beyond appearances."],
-["Discernment","I detect when something appears right but is not."],
-
-/* WISDOM */
-["Wisdom","I see the likely outcome of decisions before they are made."],
-["Wisdom","I recognize the best course of action in complex situations."],
-["Wisdom","I understand the right timing for decisions."],
-["Wisdom","I help others avoid mistakes through practical insight."],
-["Wisdom","I apply truth effectively to real-life situations."],
-["Wisdom","I bring clarity when situations are complicated."],
-["Wisdom","I recognize long-term consequences of choices."],
-["Wisdom","I identify the most appropriate path forward."],
-
-/* TEACHING */
-["Teaching","I explain complex truth in ways others can understand."],
-["Teaching","I recognize when someone does not fully understand something."],
-["Teaching","I simplify ideas without losing meaning."],
-["Teaching","I organize information for clarity and comprehension."],
-["Teaching","I help others grasp difficult concepts."],
-["Teaching","I adjust explanations based on the listener."],
-["Teaching","I focus on helping others truly understand, not just hear."],
-["Teaching","I communicate truth in a structured and clear way."],
-
-/* EXHORTATION */
-["Exhortation","I help others see hope when they feel discouraged."],
-["Exhortation","I give people confidence to move forward."],
-["Exhortation","I encourage action even when others feel fear."],
-["Exhortation","I help people keep going when they want to stop."],
-["Exhortation","I strengthen others internally with encouragement."],
-["Exhortation","I motivate people toward growth and progress."],
-["Exhortation","I help others overcome hesitation and doubt."],
-["Exhortation","I instill courage that leads to forward movement."],
-
-/* SERVICE */
-["Service","I take action when something needs to be done."],
-["Service","I notice practical needs others overlook."],
-["Service","I follow through until tasks are completed."],
-["Service","I step in to help without being asked."],
-["Service","I focus on getting things done efficiently."],
-["Service","I support others through practical action."],
-["Service","I respond quickly when help is needed."],
-["Service","I ensure responsibilities are completed fully."],
-
-/* MERCY */
-["Mercy","I extend compassion when others fail or fall short."],
-["Mercy","I choose understanding over judgment when others make mistakes."],
-["Mercy","I respond gently when others struggle or fail."],
-["Mercy","I desire to forgive rather than condemn."],
-["Mercy","I show grace even when it is not deserved."],
-["Mercy","I seek to restore rather than judge others."],
-["Mercy","I respond with kindness in situations involving failure."],
-["Mercy","I reflect forgiveness and compassion in difficult situations."],
-
-/* HOSPITALITY */
-["Hospitality","I open my home or space to others willingly."],
-["Hospitality","I enjoy hosting and bringing people together."],
-["Hospitality","I make people feel welcome quickly."],
-["Hospitality","I create environments where people feel they belong."],
-["Hospitality","I intentionally include those who may feel left out."],
-["Hospitality","I make others feel comfortable and at ease."],
-["Hospitality","I bring people together in meaningful ways."],
-["Hospitality","I remove barriers so others feel accepted."],
-
-/* GIVING */
-["Giving","I find joy in giving my resources to meet needs."],
-["Giving","I give willingly rather than out of obligation."],
-["Giving","I am eager to give when I see a need."],
-["Giving","I trust God as I give, even when it requires sacrifice."],
-["Giving","I see my resources as something to be shared."],
-["Giving","I look for opportunities to give, not just respond when asked."],
-["Giving","I recognize where giving will have the greatest impact."],
-["Giving","I see myself as a steward of resources rather than an owner."],
-
-/* PROPHECY */
-["Prophecy","I feel compelled to speak truth that aligns with God’s will."],
-["Prophecy","I speak when correction or alignment is needed."],
-["Prophecy","I communicate truth with conviction and clarity."],
-["Prophecy","I feel a burden to share what God reveals."],
-["Prophecy","I address misalignment directly rather than avoiding it."],
-["Prophecy","I communicate truth beyond personal opinion."],
-["Prophecy","I speak truth even when it is difficult."],
-["Prophecy","I feel responsible to share truth for alignment."],
-
-/* EVANGELISM */
-["Evangelism","I am drawn to people who do not know Christ."],
-["Evangelism","I initiate conversations about faith naturally."],
-["Evangelism","I share the message of the gospel clearly."],
-["Evangelism","I feel urgency for others to come to faith."],
-["Evangelism","I connect easily with those outside the faith."],
-["Evangelism","I help others move toward belief in Christ."],
-["Evangelism","I look for opportunities to share the gospel."],
-["Evangelism","I am energized when others respond to faith."],
-
-/* APOSTLESHIP */
-["Apostleship","I am drawn to start new works where none exist."],
-["Apostleship","I build structures that others can grow from."],
-["Apostleship","I establish strong foundations for new efforts."],
-["Apostleship","I think beyond existing systems and structures."],
-["Apostleship","I strengthen and guide developing works."],
-["Apostleship","I see the big picture across multiple efforts."],
-["Apostleship","I help align and connect different initiatives."],
-["Apostleship","I create environments where new growth can happen."],
-
-/* SHEPHERDING */
-["Shepherding","I feel responsible for the spiritual growth of specific people over time."],
-["Shepherding","I remain committed to people even when progress is slow."],
-["Shepherding","I notice when someone is drifting before it becomes obvious."],
-["Shepherding","I feel responsible to help others stay grounded in truth."],
-["Shepherding","I invest in people consistently, not just when issues arise."],
-["Shepherding","I guide others toward maturity over time."],
-["Shepherding","I feel a burden to protect others from harmful influences."],
-["Shepherding","I take responsibility for the well-being of those entrusted to me."],
-
-/* FAITH */
-["Faith","I trust God even when I cannot see how things will work out."],
-["Faith","I remain confident when circumstances are uncertain."],
-["Faith","I believe God will act even without visible evidence."],
-["Faith","I stay steady when others begin to doubt."],
-["Faith","I rely on God when outcomes are unclear."],
-["Faith","I bring confidence to others through my trust in God."],
-["Faith","I remain stable under pressure because of my belief."],
-["Faith","I hold onto trust even when others struggle to do so."]
-];
-
-// ---------------- SHUFFLE ----------------
-function shuffleBalanced(arr){
-  let grouped={}; gifts.forEach(g=>grouped[g]=[]);
-  arr.forEach(x=>grouped[x[0]].push(x));
-  let result=[];
-  for(let i=0;i<8;i++){
-    let keys=[...gifts].sort(()=>Math.random()-0.5);
-    keys.forEach(k=>{
-      if(grouped[k][i]) result.push(grouped[k][i]);
-    });
-  }
-  return result;
+function interpret(score){
+  if(score >= 80) return "Strong evidence of this gift";
+  if(score >= 65) return "Likely gift";
+  if(score >= 50) return "Possible / emerging";
+  return "Less evident";
 }
 
-// ---------------- STATE ----------------
-let list=shuffleBalanced(q);
-let answers=new Array(list.length).fill(null);
-let i=0;
 
-// ---------------- DESCRIPTIONS ----------------
-const desc = {
-Leadership:"You guide people toward direction and outcomes.",
-Administration:"You organize and structure effectively.",
-Knowledge:"You understand deeper meaning and connections.",
-Discernment:"You sense truth beneath the surface.",
-Wisdom:"You apply truth to real situations.",
-Teaching:"You explain truth clearly.",
-Exhortation:"You encourage and strengthen others.",
-Service:"You meet practical needs.",
-Mercy:"You show compassion and forgiveness.",
-Hospitality:"You create welcoming environments.",
-Giving:"You share resources generously.",
-Prophecy:"You speak truth boldly.",
-Evangelism:"You lead others to faith.",
-Apostleship:"You start new works.",
-Shepherding:"You care for people long-term.",
-Faith:"You trust God consistently."
-};
+function intro(){
+document.getElementById("app").innerHTML=`
+<h2>Spiritual Gifts Assessment</h2>
 
-// ---------------- BIBLE ----------------
-const bible = {
-Leadership:"Nehemiah",
-Administration:"Joseph",
-Knowledge:"Paul",
-Discernment:"John",
-Wisdom:"Solomon",
-Teaching:"Ezra",
-Exhortation:"Barnabas",
-Service:"Martha",
-Mercy:"Good Samaritan",
-Hospitality:"Lydia",
-Giving:"Widow",
-Prophecy:"Elijah",
-Evangelism:"Philip",
-Apostleship:"Paul",
-Shepherding:"Peter",
-Faith:"Abraham"
-};
+<p><b>Discover how God may be working through you.</b></p>
 
-// ---------------- SCRIPTURE ----------------
+<p class="small">
+This assessment is designed to help identify your spiritual gifts—how God uniquely works through your life to serve and strengthen others.
+</p>
 
-const scripture = {
-Leadership:"Nehemiah 2:17-18",
-Administration:"Genesis 41:39-41",
-Knowledge:"1 Corinthians 12:8",
-Discernment:"1 John 4:1",
-Wisdom:"James 1:5",
-Teaching:"Romans 12:7",
-Exhortation:"Romans 12:8",
-Service:"Galatians 5:13",
-Mercy:"Luke 10:33-34",
-Hospitality:"1 Peter 4:9",
-Giving:"2 Corinthians 9:7",
-Prophecy:"1 Corinthians 14:3",
-Evangelism:"Acts 8:5-6",
-Apostleship:"Ephesians 4:11",
-Shepherding:"1 Peter 5:2-3",
-Faith:"Hebrews 11:1"
-};
+<p class="small">
+The Bible also speaks about the <b>fruit of the Spirit</b> (love, joy, peace, etc.), which describes the character every believer is called to grow in. That is different from spiritual gifts.
+</p>
+
+<p class="small">
+Spiritual gifts are not about who you are becoming, but how God works through you. While all believers are called to love, serve, give, and care for others, a spiritual gift goes beyond obedience—it becomes:
+</p>
+
+<ul class="small">
+  <li><b>Consistent</b> — it shows up regularly in your life</li>
+  <li><b>Natural</b> — it flows without constant striving</li>
+  <li><b>Effective</b> — it produces meaningful impact in others</li>
+</ul>
+
+<p class="small">
+Because of this, this assessment focuses on <b>observable impact</b>—what others experience through you—not just what you intend or try to do.
+</p>
+
+<p class="small">
+Rather than measuring effort alone, this tool helps reveal patterns of how God may already be working through your life.
+</p>
+
+<p class="small">
+“Each of you should use whatever gift you have received to serve others.” — 1 Peter 4:10
+</p>
+
+<h3>Select Level</h3>
+
+<div class="small">
+
+<p><b>Quick Insight</b><br>
+Fast and simple. Based on your personal responses.</p>
+
+<p><b>Guided Discernment</b><br>
+More accurate. Evaluates patterns like consistency, impact, and effort.</p>
+
+<p><b>Confirmed Discernment</b><br>
+Most complete. Designed to include input from others who know you well.</p>
+
+<p><i>Recommended: Guided Discernment</i></p>
+
+</div>
+
+<button onclick="start(1)">Quick Insight</button>
+<button onclick="start(2)">Guided Discernment</button>
+<button onclick="start(3)">Confirmed Discernment</button>
+`;
+}
 
 
-// ---------------- RENDER ----------------
+function start(l){
+level=l;
+list=(level===1)?lvl1:lvl2;
+answers=new Array(list.length).fill(null);
+i=0;
+render();
+}
+
 function render(){
-  if(i>=list.length) return results();
+if(i>=list.length) return results();
+let p=Math.round((i/list.length)*100);
 
-  let p=Math.round((i/list.length)*100);
-
-  app.innerHTML=`
-  <h2>Spiritual Gifts Assessment</h2>
-
-  <div class="progress"><div class="progress-bar" style="width:${p}%"></div></div>
-
-  <p class="small">1 = Not like me | 5 = Very much like me</p>
-
-  <h3>${i+1}. ${list[i][1]}</h3>
-
-  ${[1,2,3,4,5].map(n=>`
-    <button class="${answers[i]===n?'selected':''}" onclick="ans(${n})">${n}</button>
-  `).join("")}
-
-  <div style="margin-top:10px;">${i>0?`<button onclick="back()">Back</button>`:""}</div>
-  `;
+document.getElementById("app").innerHTML=`
+<div class="progress"><div class="progress-bar" style="width:${p}%"></div></div>
+<p class="small">Question ${i+1} of ${list.length}</p>
+<p class="small">1 = Not like me | 5 = Very much like me</p>
+<h3>${i+1}. ${list[i].text}</h3>
+${[1,2,3,4,5].map(n=>`<button class="${answers[i]===n?'selected':''}" onclick="ans(${n})">${n}</button>`).join("")}
+${i>0?'<br><button onclick="back()">Back</button>':''}
+`;
 }
 
 function ans(v){answers[i]=v;i++;render();}
 function back(){i--;render();}
 
-// ---------------- RESULTS ----------------
 function results(){
+let scores={};
+list.forEach((q,idx)=>{
+if(!scores[q.gift]) scores[q.gift]=[];
+scores[q.gift].push({val:answers[idx],type:q.type});
+});
 
-  let scores={}; gifts.forEach(g=>scores[g]=0);
-  list.forEach((q,idx)=> scores[q[0]] += answers[idx]||0);
-
-  let sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-  let top3 = sorted.slice(0,3);
-
-  app.innerHTML=`
-  <h2>Top 3 Gifts</h2>
-
-  ${top3.map(([g,v])=>`
-    <div>
-      <h3>${g} (${v})</h3>
-      <div class="small"><b>Biblical Character:</b> ${bible[g]}</div>
-      <p>${desc[g]}</p>
-      <div class="small"><b>Scripture:</b> ${scripture[g]}</div>
-    </div>
-  `).join("")}
-
-  <canvas id="barChart"></canvas>
-  <canvas id="radarChart"></canvas>
-
-  <button onclick="location.reload()">Restart</button>
-  `;
-
-  const labels = sorted.map(x=>x[0]);
-  const values = sorted.map(x=>x[1]);
-
-  new Chart(document.getElementById("barChart"),{
-    type:'bar',
-    data:{
-      labels,
-      datasets:[{
-        label:'Score',
-        data:values
-      }]
-    }
-  });
-
-  new Chart(document.getElementById("radarChart"),{
-    type:'radar',
-    data:{
-      labels,
-      datasets:[{
-        label:'Score',
-        data:values
-      }]
-    }
-  });
+let final={};
+for(let g in scores){
+let total=0,w=0;
+scores[g].forEach(x=>{
+let wt=(level===1||!x.type)?1:{Evidence:0.2,Frequency:0.2,Outcome:0.3,Effort:0.15,Cost:0.15}[x.type];
+total+=x.val*wt; w+=wt;
+});
+final[g]=Math.round((total/w)*20);
 }
 
-render();
+let sorted=Object.entries(final).sort((a,b)=>b[1]-a[1]);
+topResults = sorted.slice(0,3);
 
+document.getElementById("app").innerHTML=`
+<div id="resultsContent">
+<h2>Top 3 Gifts</h2>
+${topResults.map(([g,v])=>{
+let e=explanations[g]||["","","",""];
+return `<div>
+<h3>${g} — Score: ${v} / 100</h3>
+<p class="small"><b>${interpret(v)}</b></p>
+<p><b>What this means:</b> ${e[0]}</p>
+<p><b>What others experience:</b> ${e[1]}</p>
+<p class="small"><b>Biblical example:</b> ${e[2]}</p>
+<p class="small"><b>Scripture:</b> ${e[3]}</p>
+</div>`;
+}).join("")}
+
+<canvas id="bar"></canvas>
+<canvas id="radar"></canvas>
+</div>
+
+<button onclick="downloadPDF()">Download PDF</button>
+<button onclick="shareResults()">Share</button>
+<button onclick="copyResults()">Copy Results</button>
+<button onclick="intro()">Try Again</button>
+`;
+
+new Chart(document.getElementById("bar"),{
+type:'bar',
+data:{labels:sorted.map(x=>x[0]),datasets:[{label:'Score',data:sorted.map(x=>x[1])}]}
+});
+
+new Chart(document.getElementById("radar"),{
+type:'radar',
+data:{labels:sorted.map(x=>x[0]),datasets:[{label:'Profile',data:sorted.map(x=>x[1])}]}
+});
+}
+
+async function downloadPDF(){
+  const { jsPDF } = window.jspdf;
+  const element = document.getElementById("resultsContent");
+  const canvas = await html2canvas(element);
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jsPDF();
+  const width = pdf.internal.pageSize.getWidth();
+  const height = (canvas.height * width) / canvas.width;
+  pdf.addImage(imgData, "PNG", 0, 0, width, height);
+  pdf.save("Spiritual_Gifts_Results.pdf");
+}
+
+function shareResults(){
+  let text = "My Spiritual Gifts Results:\n";
+  topResults.forEach(([g,v])=>{ text += g + ": " + v + "/100\n"; });
+  if(navigator.share){
+    navigator.share({title:"Spiritual Gifts Results",text:text});
+  } else {
+    alert("Sharing not supported. Use Copy Results.");
+  }
+}
+
+function copyResults(){
+  let text = "My Spiritual Gifts Results:\n";
+  topResults.forEach(([g,v])=>{ text += g + ": " + v + "/100\n"; });
+  navigator.clipboard.writeText(text);
+  alert("Results copied!");
+}
+
+intro();
 </script>
 </body>
 </html>

@@ -8,12 +8,88 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body {font-family:Arial;max-width:720px;margin:auto;padding:20px;background:#f5f7fb}
-button {padding:10px;margin:5px;border-radius:8px;border:none;background:#007bff;color:white}
-.selected {background:#28a745}
-.progress {height:8px;background:#ddd;border-radius:6px}
-.progress-bar {height:8px;background:#007bff;border-radius:6px}
-.small {font-size:14px;color:#666}
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#222;
+  --muted:#666;
+  --blue:#2f6fe4;
+  --blue-dark:#255dcc;
+  --green:#28a745;
+  --border:#dfe5ef;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Arial,sans-serif;
+  max-width:760px;
+  margin:auto;
+  padding:18px;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.45;
+}
+#app{
+  background:var(--card);
+  border-radius:18px;
+  padding:20px 18px 24px;
+  box-shadow:0 10px 28px rgba(0,0,0,.08);
+}
+button{
+  padding:12px 16px;
+  margin:6px 6px 0 0;
+  border-radius:12px;
+  border:none;
+  background:var(--blue);
+  color:white;
+  font-size:16px;
+  font-weight:600;
+  box-shadow:0 3px 8px rgba(0,0,0,0.15);
+  transition:all .18s ease;
+  cursor:pointer;
+}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.selected{background:var(--green)}
+.progress{
+  height:12px;
+  background:#e7ecf4;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  margin:8px 0 10px;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--blue),var(--green));
+  border-radius:999px;
+  transition:width .25s ease;
+}
+.small{font-size:14px;color:var(--muted)}
+.level-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.level-buttons button{margin:0}
+.progress-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.progress-pill{background:#eef4ff;color:var(--blue-dark);border:1px solid #c9d9ff;font-size:13px;padding:7px 11px;border-radius:999px;font-weight:600}
+.question-card{margin-top:10px;border:1px solid var(--border);border-radius:16px;padding:16px;background:#fbfcfe}
+.answer-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.answer-row button{min-width:56px;margin:0}
+.nav-row{display:flex;justify-content:space-between;gap:12px;margin-top:14px}
+.nav-row .spacer{flex:1}
+.results-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.results-actions button{margin:0}
+canvas{margin-top:18px;width:100% !important;max-width:100%;background:white;border-radius:12px}
+h2,h3{margin-top:0}
+@media (max-width:600px){
+  body{padding:14px}
+  #app{padding:18px 16px 22px}
+  .level-buttons{flex-direction:column}
+  .level-buttons button{width:100%}
+  .answer-row{display:grid;grid-template-columns:1fr}
+  .answer-row button{width:100%;text-align:left;min-height:50px}
+  .nav-row button{flex:1;margin:0}
+  .results-actions{flex-direction:column}
+  .results-actions button{width:100%}
+}
 </style>
 </head>
 <body>
@@ -73,7 +149,6 @@ Rather than measuring effort alone, this tool helps reveal patterns of how God m
 <h3>Select Level</h3>
 
 <div class="small">
-
 <p><b>Quick Insight</b><br>
 Fast and simple. Based on your personal responses.</p>
 
@@ -84,14 +159,16 @@ More accurate. Evaluates patterns like consistency, impact, and effort.</p>
 Most complete. Designed to include input from others who know you well.</p>
 
 <p><i>Recommended: Guided Discernment</i></p>
-
 </div>
 
-<button onclick="start(1)">Quick Insight</button>
-<button onclick="start(2)">Guided Discernment</button>
-<button onclick="start(3)">Confirmed Discernment</button>
+<div class="level-buttons">
+  <button onclick="start(1)">Quick Insight</button>
+  <button onclick="start(2)">Guided Discernment</button>
+  <button onclick="start(3)">Confirmed Discernment</button>
+</div>
 `;
 }
+
 
 
 function start(l){
@@ -104,20 +181,46 @@ render();
 
 function render(){
 if(i>=list.length) return results();
-let p=Math.round((i/list.length)*100);
+
+let answered = answers.filter(v=>v!==null).length;
+let p=Math.round((answered/list.length)*100);
+let currentAnswer = answers[i];
 
 document.getElementById("app").innerHTML=`
+<div class="progress-meta">
+  <p class="small">Question ${i+1} of ${list.length}</p>
+  <div class="progress-pill">${answered} of ${list.length} answered • ${p}%</div>
+</div>
 <div class="progress"><div class="progress-bar" style="width:${p}%"></div></div>
-<p class="small">Question ${i+1} of ${list.length}</p>
 <p class="small">1 = Not like me | 5 = Very much like me</p>
-<h3>${i+1}. ${list[i].text}</h3>
-${[1,2,3,4,5].map(n=>`<button class="${answers[i]===n?'selected':''}" onclick="ans(${n})">${n}</button>`).join("")}
-${i>0?'<br><button onclick="back()">Back</button>':''}
+
+<div class="question-card">
+  <h3>${i+1}. ${list[i].text}</h3>
+  <div class="answer-row">
+    ${[1,2,3,4,5].map(n=>`<button class="${currentAnswer===n?'selected':''}" onclick="ans(${n})">${n}</button>`).join("")}
+  </div>
+  <div class="nav-row">
+    ${i>0?'<button onclick="back()">Back</button>':'<div class="spacer"></div>'}
+  </div>
+</div>
 `;
 }
 
-function ans(v){answers[i]=v;i++;render();}
-function back(){i--;render();}
+function ans(v){
+answers[i]=v;
+if(i<list.length-1){
+  i++;
+  render();
+} else {
+  results();
+}
+}
+function back(){
+if(i>0){
+  i--;
+  render();
+}
+}
 
 function results(){
 let scores={};
@@ -158,10 +261,12 @@ return `<div>
 <canvas id="radar"></canvas>
 </div>
 
-<button onclick="downloadPDF()">Download PDF</button>
-<button onclick="shareResults()">Share</button>
-<button onclick="copyResults()">Copy Results</button>
-<button onclick="intro()">Try Again</button>
+<div class="results-actions">
+  <button onclick="downloadPDF()">Download PDF</button>
+  <button onclick="shareResults()">Share</button>
+  <button onclick="copyResults()">Copy Results</button>
+  <button onclick="intro()">Try Again</button>
+</div>
 `;
 
 new Chart(document.getElementById("bar"),{

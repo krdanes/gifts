@@ -1,401 +1,14 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spiritual Gifts Assessment</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js">
-// ===== UPDATED LEVEL 2 SCORING =====
-function calculateScores(){
-  const scores = calculateScores();
 
-  answers.forEach((answer, index) => {
-    const q = list[index];
-    const gift = q.gift;
-
-    // Map types
-    let type = "AFO";
-    if(q.type === "Effort" || q.type === "Cost") type = "EC";
-
-    if (!scores[gift]) {
-      scores[gift] = { AFO: 0, EC: 0, countAFO:0, countEC:0, total:0 };
-    }
-
-    if(type === "AFO"){
-      scores[gift].AFO += answer;
-      scores[gift].countAFO++;
-    } else {
-      scores[gift].EC += answer;
-      scores[gift].countEC++;
-    }
-  });
-
-  Object.keys(scores).forEach(gift=>{
-    const s = scores[gift];
-    const afoAvg = s.AFO / (s.countAFO || 1);
-    const ecAvg = s.EC / (s.countEC || 1);
-    s.total = (afoAvg * 0.7) + (ecAvg * 0.3);
-  });
-
-  return scores;
-}
-
-
-
-// ===== SAFE PDF FUNCTION =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// ===== SAFE SHARE FUNCTION =====
-function shareResults() {
-  const text = document.getElementById("app").innerText;
-
-  if (navigator.share && location.protocol !== "file:") {
-    navigator.share({
-      title: "My Spiritual Gifts Results",
-      text: text
-    });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert("Sharing not supported here. Results copied to clipboard instead.");
-  }
-}
-
-
-
-// ===== FINAL PDF (NO SCALE, NO CLONE, PRESERVE CHARTS) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  // Apply PDF styling (no transform!)
-  element.classList.add("pdf-mode");
-
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  // Remove styling
-  element.classList.remove("pdf-mode");
-
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = -(imgHeight - heightLeft);
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
-// ===== UPDATED LEVEL 2 SCORING =====
-function calculateScores(){
-  const scores = calculateScores();
-
-  answers.forEach((answer, index) => {
-    const q = list[index];
-    const gift = q.gift;
-
-    // Map types
-    let type = "AFO";
-    if(q.type === "Effort" || q.type === "Cost") type = "EC";
-
-    if (!scores[gift]) {
-      scores[gift] = { AFO: 0, EC: 0, countAFO:0, countEC:0, total:0 };
-    }
-
-    if(type === "AFO"){
-      scores[gift].AFO += answer;
-      scores[gift].countAFO++;
-    } else {
-      scores[gift].EC += answer;
-      scores[gift].countEC++;
-    }
-  });
-
-  Object.keys(scores).forEach(gift=>{
-    const s = scores[gift];
-    const afoAvg = s.AFO / (s.countAFO || 1);
-    const ecAvg = s.EC / (s.countEC || 1);
-    s.total = (afoAvg * 0.7) + (ecAvg * 0.3);
-  });
-
-  return scores;
-}
-
-
-
-// ===== SAFE PDF FUNCTION =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// ===== SAFE SHARE FUNCTION =====
-function shareResults() {
-  const text = document.getElementById("app").innerText;
-
-  if (navigator.share && location.protocol !== "file:") {
-    navigator.share({
-      title: "My Spiritual Gifts Results",
-      text: text
-    });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert("Sharing not supported here. Results copied to clipboard instead.");
-  }
-}
-
-
-
-// ===== FINAL PDF (NO SCALE, NO CLONE, PRESERVE CHARTS) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  // Apply PDF styling (no transform!)
-  element.classList.add("pdf-mode");
-
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  // Remove styling
-  element.classList.remove("pdf-mode");
-
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = -(imgHeight - heightLeft);
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-// ===== UPDATED LEVEL 2 SCORING =====
-function calculateScores(){
-  const scores = calculateScores();
-
-  answers.forEach((answer, index) => {
-    const q = list[index];
-    const gift = q.gift;
-
-    // Map types
-    let type = "AFO";
-    if(q.type === "Effort" || q.type === "Cost") type = "EC";
-
-    if (!scores[gift]) {
-      scores[gift] = { AFO: 0, EC: 0, countAFO:0, countEC:0, total:0 };
-    }
-
-    if(type === "AFO"){
-      scores[gift].AFO += answer;
-      scores[gift].countAFO++;
-    } else {
-      scores[gift].EC += answer;
-      scores[gift].countEC++;
-    }
-  });
-
-  Object.keys(scores).forEach(gift=>{
-    const s = scores[gift];
-    const afoAvg = s.AFO / (s.countAFO || 1);
-    const ecAvg = s.EC / (s.countEC || 1);
-    s.total = (afoAvg * 0.7) + (ecAvg * 0.3);
-  });
-
-  return scores;
-}
-
-
-
-// ===== SAFE PDF FUNCTION =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// ===== SAFE SHARE FUNCTION =====
-function shareResults() {
-  const text = document.getElementById("app").innerText;
-
-  if (navigator.share && location.protocol !== "file:") {
-    navigator.share({
-      title: "My Spiritual Gifts Results",
-      text: text
-    });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert("Sharing not supported here. Results copied to clipboard instead.");
-  }
-}
-
-
-
-// ===== FINAL PDF (NO SCALE, NO CLONE, PRESERVE CHARTS) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  // Apply PDF styling (no transform!)
-  element.classList.add("pdf-mode");
-
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  // Remove styling
-  element.classList.remove("pdf-mode");
-
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = -(imgHeight - heightLeft);
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-</script>
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 :root{
@@ -500,16 +113,34 @@ h2,h3{margin-top:0}
   display:block;
 }
 
-</style>
 
+/* Header */
+.app-header{text-align:center;margin-bottom:18px;}
+.app-header h1{margin:0;font-size:24px;color:#2f6fe4;}
+.subtitle{font-size:14px;color:#666;margin-top:4px;}
+
+/* Top cards */
+.top-cards{display:grid;gap:18px;margin-top:10px;}
+.top-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 28px rgba(0,0,0,0.08);border-left:6px solid #2f6fe4;}
+.top-1{border-left-color:#28a745;}
+.score{font-size:14px;color:#666;margin-left:6px;}
+.card-highlight{color:#2f6fe4;font-weight:600;margin-bottom:10px;}
+
+/* Summary cards */
+.results-cards{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px;}
+@media (min-width:768px){.results-cards{grid-template-columns:repeat(3,1fr);}}
+.result-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,0.08);border-left:6px solid #ccc;}
+.card-top{border-left-color:#28a745;}
+.card-mid{border-left-color:#2f6fe4;}
+.card-low{border-left-color:#f59e0b;}
+
+</style>
 <style>
 .pdf-mode{
   width:800px !important;
   font-size:12px !important;
 }
 </style>
-
-
 <style>
 .pdf-mode{
   width:800px !important;
@@ -528,6 +159,7 @@ canvas:last-of-type{
 </style>
 
 </head>
+
 <body>
 <div id="app"></div>
 
@@ -614,7 +246,6 @@ Fast and simple. Based on your personal responses.</p>
 <p><b>Guided Discernment</b><br>
 More accurate. Evaluates patterns like consistency, impact, and effort.</p>
 
-<p><b>Confirmed Discernment</b><br>
 Most complete. Designed to include input from others who know you well.</p>
 
 <p><i>Recommended: Guided Discernment</i></p>
@@ -623,7 +254,6 @@ Most complete. Designed to include input from others who know you well.</p>
 <div class="level-buttons">
   <button onclick="start(1)">Quick Insight</button>
   <button onclick="start(2)">Guided Discernment</button>
-  <button onclick="start(3)">Confirmed Discernment</button>
 </div>
 `;
 }
@@ -688,6 +318,50 @@ if(!scores[q.gift]) scores[q.gift]=[];
 scores[q.gift].push({val:answers[idx],type:q.type});
 });
 
+
+function renderTopCards(topResults){
+  return `
+    <div class="top-cards">
+      ${topResults.map(([g,v],i)=>{
+        let e = explanations[g] || ["","","",""];
+        return `
+          <div class="top-card ${i===0?'top-1':''}">
+            <h3>${g} — <span class="score">${v}</span></h3>
+            <p class="card-highlight">${interpret(v)}</p>
+            <p><b>What this means:</b><br>${e[0]}</p>
+            <p><b>What others experience:</b><br>${e[1]}</p>
+            <p class="small"><b>Biblical example:</b> ${e[2]}</p>
+            <p class="small"><b>Scripture:</b> ${e[3]}</p>
+          </div>
+        `;
+      }).join("")}
+    </div>`;
+}
+
+function renderCardsHTML(sorted){
+  const top = sorted.slice(0,3);
+  const mid = sorted.slice(3,6);
+  const low = sorted.slice(-3);
+  return `
+  <div class="results-cards">
+    <div class="result-card card-top">
+      <h3>🔥 Strongest Gifts</h3>
+      <p class="small">These are your most dominant and consistently expressed gifts.</p>
+      <ul>${top.map(x=>`<li>${x[0]} (${x[1]})</li>`).join("")}</ul>
+    </div>
+    <div class="result-card card-mid">
+      <h3>🌱 Developing Gifts</h3>
+      <p class="small">These gifts are present and growing with use and opportunity.</p>
+      <ul>${mid.map(x=>`<li>${x[0]} (${x[1]})</li>`).join("")}</ul>
+    </div>
+    <div class="result-card card-low">
+      <h3>⚠️ Lowest Gifts</h3>
+      <p class="small">These are less dominant and may not reflect your primary calling.</p>
+      <ul>${low.map(x=>`<li>${x[0]} (${x[1]})</li>`).join("")}</ul>
+    </div>
+  </div>`;
+}
+
 let final={};
 for(let g in scores){
 let total=0,w=0;
@@ -703,21 +377,19 @@ topResults = sorted.slice(0,3);
 
 document.getElementById("app").innerHTML=`
 <div id="resultsContent">
-<h2>Top 3 Gifts</h2>
-${topResults.map(([g,v])=>{
-let e=explanations[g]||["","","",""];
-return `<div>
-<h3>${g} — Score: ${v} / 100</h3>
-<p class="small"><b>${interpret(v)}</b></p>
-<p><b>What this means:</b> ${e[0]}</p>
-<p><b>What others experience:</b> ${e[1]}</p>
-<p class="small"><b>Biblical example:</b> ${e[2]}</p>
-<p class="small"><b>Scripture:</b> ${e[3]}</p>
-</div>`;
-}).join("")}
+
+<div class="app-header">
+  <h1>Spiritual Gifts Assessment</h1>
+  <p class="subtitle">Personalized Results & Interpretation</p>
+</div>
+
+<h2>Your Primary Gifts</h2>
+${renderTopCards(topResults)}
+
 
 <canvas id="bar"></canvas>
 <canvas id="radar"></canvas>
+${renderCardsHTML(sorted)}
 </div>
 
 <div class="results-actions">
@@ -771,14 +443,14 @@ function copyResults(){
 intro();
 
 // ===== UPDATED LEVEL 2 SCORING =====
+
 function calculateScores(){
-  const scores = calculateScores();
+  const scores = {};
 
   answers.forEach((answer, index) => {
     const q = list[index];
     const gift = q.gift;
 
-    // Map types
     let type = "AFO";
     if(q.type === "Effort" || q.type === "Cost") type = "EC";
 
@@ -804,6 +476,7 @@ function calculateScores(){
 
   return scores;
 }
+
 
 
 
@@ -899,20 +572,92 @@ async function downloadPDF_clean() {
   pdf.save("Spiritual_Gifts_Results.pdf");
 }
 
+
+// ===== SAFE PDF OVERRIDE (FINAL) =====
+async function downloadPDF_clean() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const margin = 10;
+  const width = 190;
+
+  const capture = async (el) => {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+    return canvas;
+  };
+
+  // PAGE 1
+  const top = document.createElement("div");
+  top.appendChild(document.querySelector(".app-header").cloneNode(true));
+  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
+
+  document.body.appendChild(top);
+  const canvas1 = await capture(top);
+  document.body.removeChild(top);
+
+  const h1 = (canvas1.height * width) / canvas1.width;
+  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
+
+  // PAGE 2 BAR (CAPPED HEIGHT)
+  pdf.addPage();
+  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
+
+  let barHeight = (barCanvas.height * width) / barCanvas.width;
+  const maxHeight = 250;
+  if (barHeight > maxHeight) barHeight = maxHeight;
+
+  const yBar = (297 - barHeight) / 2;
+
+  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
+
+  // PAGE 3 RADAR + SUMMARY
+  pdf.addPage();
+  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
+
+  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
+  if (radarHeight > 130) radarHeight = 130;
+
+  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
+
+  const summary = document.querySelector(".results-cards");
+  if (summary) {
+    const summaryCanvas = await capture(summary);
+    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
+    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
+  }
+
+  pdf.save("Spiritual_Gifts_Results.pdf");
+}
+
+// FORCE override without deleting original logic
+window.downloadPDF = downloadPDF_clean;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btns = document.querySelectorAll("button");
+  btns.forEach(btn => {
+    if (btn.innerText.toLowerCase().includes("download")) {
+      btn.onclick = downloadPDF_clean;
+    }
+  });
+});
+
 </script>
 <script>
 // ===== FINAL calculateScores (non-recursive) =====
+
 function calculateScores(){
   const scores = {};
-  if (!window.answers || !window.list) return scores;
 
   answers.forEach((answer, index) => {
     const q = list[index];
-    if (!q) return;
     const gift = q.gift;
 
     let type = "AFO";
-    if (q.type === "Effort" || q.type === "Cost") type = "EC";
+    if(q.type === "Effort" || q.type === "Cost") type = "EC";
 
     if (!scores[gift]) {
       scores[gift] = { AFO: 0, EC: 0, countAFO:0, countEC:0, total:0 };
@@ -936,6 +681,7 @@ function calculateScores(){
 
   return scores;
 }
+
 
 
 // ===== FINAL PDF (clean layout, charts preserved, no buttons) =====
@@ -978,6 +724,79 @@ async function downloadPDF_clean() {
 
   pdf.save("Spiritual_Gifts_Results.pdf");
 }
+
+// ===== SAFE PDF OVERRIDE (FINAL) =====
+async function downloadPDF_clean() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const margin = 10;
+  const width = 190;
+
+  const capture = async (el) => {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+    return canvas;
+  };
+
+  // PAGE 1
+  const top = document.createElement("div");
+  top.appendChild(document.querySelector(".app-header").cloneNode(true));
+  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
+
+  document.body.appendChild(top);
+  const canvas1 = await capture(top);
+  document.body.removeChild(top);
+
+  const h1 = (canvas1.height * width) / canvas1.width;
+  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
+
+  // PAGE 2 BAR (CAPPED HEIGHT)
+  pdf.addPage();
+  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
+
+  let barHeight = (barCanvas.height * width) / barCanvas.width;
+  const maxHeight = 250;
+  if (barHeight > maxHeight) barHeight = maxHeight;
+
+  const yBar = (297 - barHeight) / 2;
+
+  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
+
+  // PAGE 3 RADAR + SUMMARY
+  pdf.addPage();
+  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
+
+  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
+  if (radarHeight > 130) radarHeight = 130;
+
+  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
+
+  const summary = document.querySelector(".results-cards");
+  if (summary) {
+    const summaryCanvas = await capture(summary);
+    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
+    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
+  }
+
+  pdf.save("Spiritual_Gifts_Results.pdf");
+}
+
+// FORCE override without deleting original logic
+window.downloadPDF = downloadPDF_clean;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btns = document.querySelectorAll("button");
+  btns.forEach(btn => {
+    if (btn.innerText.toLowerCase().includes("download")) {
+      btn.onclick = downloadPDF_clean;
+    }
+  });
+});
+
 </script>
 <script>
 // ===== FINAL PDF (WORKING - REAL CANVAS CAPTURE) =====
@@ -1040,6 +859,79 @@ async function downloadPDF_clean() {
 
   pdf.save("Spiritual_Gifts_Results.pdf");
 }
+
+// ===== SAFE PDF OVERRIDE (FINAL) =====
+async function downloadPDF_clean() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const margin = 10;
+  const width = 190;
+
+  const capture = async (el) => {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+    return canvas;
+  };
+
+  // PAGE 1
+  const top = document.createElement("div");
+  top.appendChild(document.querySelector(".app-header").cloneNode(true));
+  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
+
+  document.body.appendChild(top);
+  const canvas1 = await capture(top);
+  document.body.removeChild(top);
+
+  const h1 = (canvas1.height * width) / canvas1.width;
+  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
+
+  // PAGE 2 BAR (CAPPED HEIGHT)
+  pdf.addPage();
+  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
+
+  let barHeight = (barCanvas.height * width) / barCanvas.width;
+  const maxHeight = 250;
+  if (barHeight > maxHeight) barHeight = maxHeight;
+
+  const yBar = (297 - barHeight) / 2;
+
+  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
+
+  // PAGE 3 RADAR + SUMMARY
+  pdf.addPage();
+  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
+
+  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
+  if (radarHeight > 130) radarHeight = 130;
+
+  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
+
+  const summary = document.querySelector(".results-cards");
+  if (summary) {
+    const summaryCanvas = await capture(summary);
+    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
+    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
+  }
+
+  pdf.save("Spiritual_Gifts_Results.pdf");
+}
+
+// FORCE override without deleting original logic
+window.downloadPDF = downloadPDF_clean;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btns = document.querySelectorAll("button");
+  btns.forEach(btn => {
+    if (btn.innerText.toLowerCase().includes("download")) {
+      btn.onclick = downloadPDF_clean;
+    }
+  });
+});
+
 </script>
 <script>
 // ===== TRUE FINAL PDF (DIRECT CANVAS CAPTURE) =====
@@ -1087,6 +979,157 @@ async function downloadPDF_clean() {
 
   pdf.save("Spiritual_Gifts_Results.pdf");
 }
+
+// ===== SAFE PDF OVERRIDE (FINAL) =====
+async function downloadPDF_clean() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const margin = 10;
+  const width = 190;
+
+  const capture = async (el) => {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+    return canvas;
+  };
+
+  // PAGE 1
+  const top = document.createElement("div");
+  top.appendChild(document.querySelector(".app-header").cloneNode(true));
+  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
+
+  document.body.appendChild(top);
+  const canvas1 = await capture(top);
+  document.body.removeChild(top);
+
+  const h1 = (canvas1.height * width) / canvas1.width;
+  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
+
+  // PAGE 2 BAR (CAPPED HEIGHT)
+  pdf.addPage();
+  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
+
+  let barHeight = (barCanvas.height * width) / barCanvas.width;
+  const maxHeight = 250;
+  if (barHeight > maxHeight) barHeight = maxHeight;
+
+  const yBar = (297 - barHeight) / 2;
+
+  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
+
+  // PAGE 3 RADAR + SUMMARY
+  pdf.addPage();
+  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
+
+  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
+  if (radarHeight > 130) radarHeight = 130;
+
+  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
+
+  const summary = document.querySelector(".results-cards");
+  if (summary) {
+    const summaryCanvas = await capture(summary);
+    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
+    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
+  }
+
+  pdf.save("Spiritual_Gifts_Results.pdf");
+}
+
+// FORCE override without deleting original logic
+window.downloadPDF = downloadPDF_clean;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btns = document.querySelectorAll("button");
+  btns.forEach(btn => {
+    if (btn.innerText.toLowerCase().includes("download")) {
+      btn.onclick = downloadPDF_clean;
+    }
+  });
+});
+
 </script>
 </body>
+
+<script>
+
+// ===== SINGLE CLEAN PDF ENGINE =====
+async function downloadPDF_clean() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const margin = 10;
+  const width = 190;
+
+  const capture = async (el) => {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+    return canvas;
+  };
+
+  // PAGE 1
+  const top = document.createElement("div");
+  top.appendChild(document.querySelector(".app-header").cloneNode(true));
+  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
+
+  document.body.appendChild(top);
+  const canvas1 = await capture(top);
+  document.body.removeChild(top);
+
+  const h1 = (canvas1.height * width) / canvas1.width;
+  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
+
+  // PAGE 2 BAR
+  pdf.addPage();
+  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
+
+  let barHeight = (barCanvas.height * width) / barCanvas.width;
+  if (barHeight > 250) barHeight = 250;
+
+  const yBar = (297 - barHeight) / 2;
+  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
+
+  // PAGE 3 RADAR (SQUARE)
+  pdf.addPage();
+  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
+
+  const size = 160;
+  const x = (210 - size) / 2;
+  const y = 20;
+
+  
+pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", x, y, size, size);
+
+  
+  // ===== SUMMARY CARDS (RESTORED)
+  const summary = document.querySelector(".results-cards");
+  if (summary) {
+    const summaryCanvas = await capture(summary);
+
+    let summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
+    if (summaryHeight > 100) summaryHeight = 100;
+
+    pdf.addImage(
+      summaryCanvas.toDataURL("image/png"),
+      "PNG",
+      margin,
+      180,
+      width,
+      summaryHeight
+    );
+  }
+pdf.save("Spiritual_Gifts_Results.pdf");
+}
+
+window.downloadPDF = downloadPDF_clean;
+
+</script>
+
 </html>

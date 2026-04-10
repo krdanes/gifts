@@ -1,15 +1,14 @@
 
 <!DOCTYPE html>
+
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Spiritual Gifts Assessment</title>
-
 <!-- Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
 :root{
   --bg:#f5f7fb;
@@ -71,6 +70,17 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 .small{font-size:14px;color:var(--muted)}
 .level-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .level-buttons button{margin:0}
+.assessment-options{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+.assessment-option{background:#f8f9fb;border:1px solid var(--border);border-radius:14px;padding:14px 14px 16px}
+.assessment-option h4{margin:0 0 6px;font-size:18px;color:#1f2d3d}
+.assessment-option p{margin:0 0 12px;color:#555;line-height:1.4}
+.option-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.recommended-pill{
+  box-shadow:0 1px 2px rgba(0,0,0,.08);font-size:12px;font-weight:700;color:#255dcc;background:#eef4ff;border:1px solid #c9d9ff;border-radius:999px;padding:4px 9px}
+.gold-btn{background:#C9A646 !important;color:#fff !important;font-weight:700}
+.gold-btn:hover{transform:translateY(-1px)}
+.assessment-header{margin:0 0 8px}
+.assessment-header-title{font-size:18px;font-weight:700;color:var(--blue-dark);line-height:1.2;margin:0}
 .progress-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .progress-pill{background:#eef4ff;color:var(--blue-dark);border:1px solid #c9d9ff;font-size:13px;padding:7px 11px;border-radius:999px;font-weight:600}
 .question-card{margin-top:10px;border:1px solid var(--border);border-radius:16px;padding:16px;background:#fbfcfe}
@@ -87,6 +97,9 @@ h2,h3{margin-top:0}
   #app{padding:18px 16px 22px}
   .level-buttons{flex-direction:column}
   .level-buttons button{width:100%}
+  .assessment-option button{width:100%}
+  .assessment-header{margin-bottom:10px}
+  .assessment-header-title{font-size:17px}
   .answer-row{display:grid;grid-template-columns:1fr}
   .answer-row button{width:100%;text-align:left;min-height:50px}
   .nav-row button{flex:1;margin:0}
@@ -112,21 +125,14 @@ h2,h3{margin-top:0}
   font-size:13px;
   display:block;
 }
-
-
-/* Header */
 .app-header{text-align:center;margin-bottom:18px;}
 .app-header h1{margin:0;font-size:24px;color:#2f6fe4;}
 .subtitle{font-size:14px;color:#666;margin-top:4px;}
-
-/* Top cards */
 .top-cards{display:grid;gap:18px;margin-top:10px;}
 .top-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 28px rgba(0,0,0,0.08);border-left:6px solid #2f6fe4;}
 .top-1{border-left-color:#28a745;}
 .score{font-size:14px;color:#666;margin-left:6px;}
 .card-highlight{color:#2f6fe4;font-weight:600;margin-bottom:10px;}
-
-/* Summary cards */
 .results-cards{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px;}
 @media (min-width:768px){.results-cards{grid-template-columns:repeat(3,1fr);}}
 .result-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,0.08);border-left:6px solid #ccc;}
@@ -134,12 +140,24 @@ h2,h3{margin-top:0}
 .card-mid{border-left-color:#2f6fe4;}
 .card-low{border-left-color:#f59e0b;}
 
+
+.global-footer-note{
+  margin-top:30px;
+  padding:14px 0;
+  border-top:1px solid #dfe5ef;
+}
+.footer-inner{
+  max-width:760px;
+  margin:auto;
+  padding:0 18px;
+  font-size:12px;
+  color:#777;
+  line-height:1.5;
+  text-align:left;
+}
+
 </style>
 <style>
-.pdf-mode{
-  width:800px !important;
-  font-size:12px !important;
-}
 </style>
 <style>
 .pdf-mode{
@@ -156,17 +174,395 @@ h2,h3{margin-top:0}
 canvas:last-of-type{
   margin-top:40px !important;
 }
+
+/* ===== FINAL PDF LAYOUT (tight, single-page cards) ===== */
+.pdf-mode{
+  width:800px !important;
+  font-size:11px !important;
+}
+
+/* header tightening */
+.pdf-mode .app-header{
+  margin-bottom:6px !important;
+}
+.pdf-mode .app-header h1{
+  margin:0 0 2px 0 !important;
+  font-size:20px !important;
+}
+.pdf-mode .subtitle{
+  margin:0 0 4px 0 !important;
+  font-size:12px !important;
+}
+
+/* section title */
+.pdf-mode h2{
+  margin:6px 0 6px 0 !important;
+  font-size:16px !important;
+}
+
+/* cards spacing */
+.pdf-mode .top-cards{
+  gap:4px !important;
+  margin-top:4px !important;
+}
+
+/* individual card compression */
+.pdf-mode .top-card{
+  padding:10px 10px 8px !important;
+  margin:0 !important;
+  page-break-inside:avoid !important;
+}
+
+.pdf-mode .top-card h3{
+  margin:0 0 3px 0 !important;
+  font-size:13px !important;
+}
+
+.pdf-mode .card-highlight{
+  margin:0 0 4px 0 !important;
+  font-size:11px !important;
+}
+
+.pdf-mode .top-card p{
+  margin:2px 0 !important;
+  line-height:1.2 !important;
+  font-size:11px !important;
+}
+
+/* prevent overflow due to long descriptions */
+.pdf-mode .top-card p:nth-of-type(2){
+  max-height:70px;
+  overflow:hidden;
+}
+
+/* charts spacing */
+.pdf-mode canvas{
+  margin-top:14px !important;
+}
+
+
+#pdf-root{
+  position:absolute;
+  left:-100000px;
+  top:0;
+  width:794px;
+  pointer-events:none;
+}
+.pdf-page{
+  width:794px;
+  min-height:1123px;
+  background:#ffffff;
+  color:#222;
+  box-sizing:border-box;
+  padding:28px 34px;
+  overflow:hidden;
+}
+.pdf-page.page-1 .app-header{text-align:center;margin-bottom:10px;}
+.pdf-page.page-1 .app-header h1{margin:0;font-size:28px;color:#2f6fe4;}
+.pdf-page.page-1 .subtitle{margin-top:4px;font-size:14px;color:#666;}
+.pdf-section-title{margin:8px 0 14px;font-size:20px;color:#1f2d3d;}
+.pdf-top-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  align-items:stretch;
+}
+.pdf-top-card{
+  border:1px solid #dfe5ef;
+  border-left:6px solid #2f6fe4;
+  border-radius:16px;
+  padding:14px 14px 12px;
+  box-shadow:none;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.pdf-top-card.top-1{border-left-color:#28a745;}
+.pdf-top-card-header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px;}
+.pdf-top-card-title{font-size:16px;font-weight:700;line-height:1.2;color:#1f2d3d;flex:1;}
+.pdf-score-wrap{text-align:right;min-width:78px;padding-top:1px;}
+.pdf-score-value{font-size:16px;font-weight:600;line-height:1;color:#5f6b7a;opacity:.88;}
+.pdf-top-card.top-1 .pdf-score-value{color:#4d8f5d;}
+.pdf-score-label{font-size:10px;font-weight:600;color:#6e7784;line-height:1.15;margin-top:3px;}
+.pdf-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0;}
+.pdf-col{min-width:0;}
+.pdf-col-right{border-left:3px solid #dfe5ef;padding-left:12px;}
+.pdf-top-card.top-1 .pdf-col-right{border-left-color:#28a745;}
+.pdf-top-card:not(.top-1) .pdf-col-right{border-left-color:#2f6fe4;}
+.pdf-field{margin:0 0 8px;line-height:1.28;font-size:11px;color:#222;}
+.pdf-field:last-child{margin-bottom:0;}
+.pdf-field strong{display:block;font-size:11px;margin-bottom:3px;color:#1f2d3d;}
+.pdf-muted{font-size:10.5px;color:#6a7280;line-height:1.28;}
+.pdf-chart-wrap{display:flex;justify-content:center;align-items:center;height:100%;}
+.pdf-chart-wrap img{max-width:100%;height:auto;display:block;}
+.pdf-radar-wrap{display:flex;justify-content:center;margin-top:4px;}
+.pdf-radar-wrap img{width:560px;max-width:100%;height:auto;display:block;}
+.pdf-summary{margin-top:22px;}
+.pdf-summary .results-cards{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:0;}
+.pdf-summary .result-card{box-shadow:none;border:1px solid #dfe5ef;border-left-width:6px;padding:14px;background:#fff;min-height:180px;}
+.pdf-summary .result-card h3{font-size:18px;margin-bottom:8px;}
+.pdf-summary .result-card ul{margin:8px 0 0 18px;padding:0;}
+.pdf-summary .result-card li{margin:0 0 4px;line-height:1.25;}
+@media print{
+  #pdf-root{position:static;left:auto;top:auto;width:auto;}
+}
+
 </style>
+<script>
+const giftDetails = {
+  "Administration": {
+    meaning: "The gift of administration is the divine strength or ability to organize multiple tasks and groups of people to accomplish these tasks.",
+    experience: "Things run smoothly, organized environments, clarity in roles",
+    example: "Nehemiah organizing the rebuilding of Jerusalem",
+    scripture: "Luke 14:28–30; Acts 6:1–7; 1 Corinthians 12:28"
+  },
+  "Apostleship": {
+    meaning: "The gift of apostleship is the divine strength or ability to pioneer new churches and ministries through planting, overseeing, and training.",
+    experience: "New ministries are started, vision expands, structures are built",
+    example: "Paul planting churches across regions",
+    scripture: "Acts 15:22–35; 1 Corinthians 12:28; 2 Corinthians 12:12; Galatians 2:7–10; Ephesians 4:11–14"
+  },
+  "Craftsmanship": {
+    meaning: "The gift of craftsmanship is the divine strength or ability to plan, build, and work with your hands in construction environments to accomplish multiple ministry applications.",
+    experience: "Physical environments are built or improved for ministry use",
+    example: "Bezalel building the tabernacle",
+    scripture: "Exodus 30:22; 31:3–11; 2 Chronicles 34:9–13; Acts 18:2–3"
+  },
+  "Discernment": {
+    meaning: "The gift of discernment is the divine strength or ability to spiritually identify falsehood and to distinguish between right and wrong motives and situations.",
+    experience: "Hidden issues are exposed, truth becomes clear",
+    example: "Peter confronting Ananias and Sapphira",
+    scripture: "Matthew 16:21–23; Acts 5:1–11; Acts 16:16–18; 1 Corinthians 12:10; 1 John 4:1–6"
+  },
+  "Evangelism": {
+    meaning: "The gift of evangelism is the divine strength or ability to help non-Christians take the necessary steps to becoming a born again Christian.",
+    experience: "People come to faith, conversations lead to salvation",
+    example: "Philip and the Ethiopian eunuch",
+    scripture: "Acts 8:5–6; Acts 8:26–40; Acts 14:21; Acts 21:8; Ephesians 4:11–14"
+  },
+  "Exhortation": {
+    meaning: "The gift of exhortation is the divine strength or ability to encourage others through the written or spoken word and Biblical truth.",
+    experience: "People feel encouraged, strengthened, and motivated",
+    example: "Barnabas encouraging believers",
+    scripture: "Acts 14:22; Romans 12:8; 1 Timothy 4:13; Hebrews 10:24–25"
+  },
+  "Faith": {
+    meaning: "The gift of faith is the divine strength or ability to believe in God for unseen supernatural results in every arena of life.",
+    experience: "Confidence rises in uncertain situations, others feel strengthened",
+    example: "Abraham trusting God’s promise",
+    scripture: "Acts 11:22–24; Romans 4:18–21; 1 Corinthians 12:9; Hebrews 11"
+  },
+  "Giving": {
+    meaning: "The gift of giving is the divine strength or ability to produce wealth and to give by tithes and offerings for the purpose of advancing the Kingdom of God on earth.",
+    experience: "Needs are met generously, ministry is resourced",
+    example: "The widow’s offering",
+    scripture: "Mark 12:41–44; Romans 12:8; 2 Corinthians 8:1–7; 2 Corinthians 9:2–7"
+  },
+  "Healing": {
+    meaning: "The gift of healing is the divine strength or ability to act as an intermediary in faith, prayer, and by the laying on of hands for the healing of physical and mental illnesses.",
+    experience: "People experience physical or emotional restoration",
+    example: "Peter healing the lame man",
+    scripture: "Acts 3:1–10; Acts 9:32–35; Acts 28:7–10; 1 Corinthians 12:9; 1 Corinthians 12:28"
+  },
+  "Helps": {
+    meaning: "The gift of helps is the divine strength or ability to work in a supportive role for the accomplishment of tasks in Christian ministry.",
+    experience: "Tasks are completed, others are supported effectively",
+    example: "Dorcas (Tabitha) serving others",
+    scripture: "Mark 15:40–41; Acts 9:36; Romans 16:1–2; 1 Corinthians 12:28"
+  },
+  "Hospitality": {
+    meaning: "The gift of hospitality is the divine strength or ability to create warm, welcoming environments for others in places such as your home, office, or church.",
+    experience: "People feel welcomed, accepted, and comfortable",
+    example: "Lydia opening her home",
+    scripture: "Acts 16:14–15; Romans 12:13; Romans 16:23; Hebrews 13:1–2; 1 Peter 4:9"
+  },
+  "Intercession": {
+    meaning: "The gift of intercession is the divine strength or ability to stand in the gap in prayer for someone, something, or someplace believing for profound results.",
+    experience: "Breakthrough happens through prayer, others feel covered",
+    example: "Moses interceding for Israel",
+    scripture: "Hebrews 7:25; Colossians 1:9–12; Colossians 4:12–13; James 5:14–16"
+  },
+  "Knowledge": {
+    meaning: "The gift of knowledge is the divine strength or ability to bring clarity and to understand situations and circumstances often accompanied by a word from God.",
+    experience: "Clarity and insight are brought into situations",
+    example: "Peter receiving revelation about Ananias",
+    scripture: "Acts 5:1–11; 1 Corinthians 12:8; Colossians 2:2–3"
+  },
+  "Leadership": {
+    meaning: "The gift of leadership is the divine strength or ability to influence people at their level while directing and focusing them on the big picture, vision, or idea.",
+    experience: "Direction is clear, people move forward together",
+    example: "Moses leading Israel",
+    scripture: "Romans 12:8; 1 Timothy 3:1–13; 1 Timothy 5:17; Hebrews 13:17"
+  },
+  "Mercy": {
+    meaning: "The gift of mercy is the divine strength or ability to feel empathy and to care for those who are hurting in any way.",
+    experience: "People feel cared for, loved, and restored",
+    example: "The Good Samaritan",
+    scripture: "Matthew 9:35–36; Mark 9:41; Romans 12:8; 1 Thessalonians 5:14"
+  },
+  "Miracles": {
+    meaning: "The gift of miracles is the divine strength or ability to alter the natural outcomes of life in a supernatural way through prayer, faith, and divine direction.",
+    experience: "Supernatural events occur beyond natural explanation",
+    example: "Elijah calling down fire",
+    scripture: "Acts 9:36–42; Acts 19:11–12; Acts 20:7–12; Romans 15:18–19; 1 Corinthians 12:10; 1 Corinthians 12:28"
+  },
+  "Missionary": {
+    meaning: "The gift of missions is the divine strength or ability to reach others outside of your culture and nationality; while in most cases living in that culture or nation.",
+    experience: "The gospel reaches new cultures and regions",
+    example: "Paul’s missionary journeys",
+    scripture: "Acts 8:4; Acts 13:2–3; Acts 22:21; Romans 10:15"
+  },
+  "Music/Worship": {
+    meaning: "The gift of music / worship is the divine strength or ability to sing, dance, or play an instrument primarily for the purpose of helping others worship God.",
+    experience: "People are drawn into worship and encounter God",
+    example: "David leading worship",
+    scripture: "Deuteronomy 31:22; 1 Samuel 16:16; 1 Chronicles 16:41–42; 2 Chronicles 5:12–13; 2 Chronicles 34:12; Psalm 150"
+  },
+  "Pastor/Shepherd": {
+    meaning: "The gift of pastor / shepherd is the divine strength or ability to care for the personal needs of others by nurturing and mending life issues.",
+    experience: "People are cared for, guided, and nurtured",
+    example: "Jesus as the Good Shepherd",
+    scripture: "John 10:1–18; Ephesians 4:11–14; 1 Timothy 3:1–7; 1 Peter 5:1–3"
+  },
+  "Prophecy": {
+    meaning: "The gift of prophecy is the divine strength or ability to boldly speak and bring clarity to scriptural and doctrinal truth, in some cases foretelling God’s plan.",
+    experience: "Truth is spoken clearly, alignment is brought",
+    example: "Nathan confronting David",
+    scripture: "Acts 2:37–40; Acts 7:51–53; Acts 26:24–29; 1 Corinthians 14:1–4; 1 Thessalonians 1:5"
+  },
+  "Service": {
+    meaning: "The gift of serving is the divine strength or ability to do small or great tasks in working for the overall good of the body of Christ.",
+    experience: "Needs are met through practical action",
+    example: "Martha serving",
+    scripture: "Acts 6:1–7; Romans 12:7; Galatians 6:10; 2 Timothy 1:16–18; Titus 3:14"
+  },
+  "Teaching": {
+    meaning: "The gift of teaching is the divine strength or ability to study and learn from the Scriptures primarily to bring understanding and depth to other Christians.",
+    experience: "Understanding increases, truth becomes clear",
+    example: "Apollos teaching accurately",
+    scripture: "Acts 18:24–28; Acts 20:20–21; 1 Corinthians 12:28; Ephesians 4:11–14"
+  },
+  "Tongues (and Interpretation)": {
+    meaning: "The gift of tongues is the divine strength or ability to pray in a heavenly language to encourage your spirit and to commune with God. The gift of tongues is often accompanied by interpretation and should be used appropriately.",
+    experience: "Spiritual encouragement and edification occur",
+    example: "Pentecost believers speaking in tongues",
+    scripture: "Acts 2:1–13; 1 Corinthians 12:10; 1 Corinthians 14:1–14"
+  },
+  "Wisdom": {
+    meaning: "The gift of wisdom is the divine strength or ability to apply the truths of Scripture in a practical way, producing the fruitful outcome and character of Jesus Christ.",
+    experience: "Wise decisions are made, clarity in complex situations",
+    example: "Solomon’s judgment",
+    scripture: "Acts 6:3,10; 1 Corinthians 2:6–13; 1 Corinthians 12:8"
+  },
+};
 
+
+// ===== EXPLANATIONS FROM giftDetails =====
+const explanations = { ...giftDetails };
+
+// alias mapping
+explanations["Shepherding"] = explanations["Pastor/Shepherd"];
+explanations["Worship"] = explanations["Music/Worship"];
+explanations["Missions"] = explanations["Missionary"];
+// ===== NORMALIZATION FIX =====
+const normalizedGiftDetails = {};
+Object.keys(giftDetails).forEach(k => {
+  normalizedGiftDetails[k.trim().toLowerCase()] = giftDetails[k];
+});
+
+// ===== LEVEL 201 =====
+const lvl201_questions = [
+{text:"I like organizing services and events.",gift:"Administration"},
+{text:"I am passionate about managing details.",gift:"Administration"},
+{text:"Creating a task list is easy and enjoyable for me.",gift:"Administration"},
+{text:"I enjoy starting new churches.",gift:"Apostleship"},
+{text:"I prefer to pioneer new ministry projects.",gift:"Apostleship"},
+{text:"I am attracted to ministries that start new churches.",gift:"Apostleship"},
+{text:"I enjoy working with my hands.",gift:"Craftsmanship"},
+{text:"I consider myself a craftsman or craftswoman.",gift:"Craftsmanship"},
+{text:"Building something with my hands is very rewarding to me.",gift:"Craftsmanship"},
+{text:"I can tell when someone is insincere.",gift:"Discernment"},
+{text:"I sense when situations are spiritually unhealthy.",gift:"Discernment"},
+{text:"I can pinpoint issues or problems before others.",gift:"Discernment"},
+{text:"I pray for the lost daily.",gift:"Evangelism"},
+{text:"I am greatly concerned about seeing the lost saved.",gift:"Evangelism"},
+{text:"I enjoy sharing the gospel with a total stranger.",gift:"Evangelism"},
+{text:"Encouraging others is a high priority in my life.",gift:"Exhortation"},
+{text:"I try to come across loving and caring.",gift:"Exhortation"},
+{text:"I look for ways to be an encouragement to other people.",gift:"Exhortation"},
+{text:"Believing God for our daily needs is important to me.",gift:"Faith"},
+{text:"Asking God for a list of big things is exciting to me.",gift:"Faith"},
+{text:"I trust that God has my back in every situation.",gift:"Faith"},
+{text:"Influencing others for the kingdom of God through finances is extremely important to me.",gift:"Giving"},
+{text:"I find ways to give offerings above my tithe.",gift:"Giving"},
+{text:"Making more money means I can give more.",gift:"Giving"},
+{text:"I look for opportunities to pray for the sick.",gift:"Healing"},
+{text:"I believe miraculous healing is for this day and age.",gift:"Healing"},
+{text:"God has used me to bring healing to those who are sick.",gift:"Healing"},
+{text:"I enjoy doing the little things that others do not.",gift:"Helps"},
+{text:"Helping others is one of my highest achievements.",gift:"Helps"},
+{text:"Being a part of the process is fulfilling to me.",gift:"Helps"},
+{text:"I enjoy having people come to my house.",gift:"Hospitality"},
+{text:"Creating a warm and welcoming home is important to me.",gift:"Hospitality"},
+{text:"I tend to make total strangers feel at home.",gift:"Hospitality"},
+{text:"I enjoy spending hours in prayer for other people.",gift:"Intercession"},
+{text:"I am burdened to pray for situations in the world.",gift:"Intercession"},
+{text:"People often describe me as a prayer warrior.",gift:"Intercession"},
+{text:"Education is very important to me.",gift:"Knowledge"},
+{text:"People seek me out to learn more about the Kingdom of God.",gift:"Knowledge"},
+{text:"I enjoy knowing biblical details and helping others to understand.",gift:"Knowledge"},
+{text:"I tend to motivate others to get involved.",gift:"Leadership"},
+{text:"I prefer to take the lead whenever necessary.",gift:"Leadership"},
+{text:"I delegate responsibilities to accomplish tasks.",gift:"Leadership"},
+{text:"My heart hurts when I see others hurting.",gift:"Mercy"},
+{text:"I’m very sensitive to sad stories.",gift:"Mercy"},
+{text:"I am motivated to help those who are less fortunate.",gift:"Mercy"},
+{text:"I believe God will use me to enact His miracles.",gift:"Miracles"},
+{text:"Miracles often happen when I’m nearby.",gift:"Miracles"},
+{text:"I have a constant hunger to see God’s miraculous power.",gift:"Miracles"},
+{text:"I enjoy sharing the gospel with other people groups and nationalities.",gift:"Missionary"},
+{text:"Living in another country to benefit the gospel is exciting to me.",gift:"Missionary"},
+{text:"I focus a lot on reaching the world for Christ.",gift:"Missionary"},
+{text:"I’ve devoted considerable time to mastering my voice and or instrument.",gift:"Music/Worship"},
+{text:"I desire to serve the church through worship.",gift:"Music/Worship"},
+{text:"I gain my deepest satisfaction through leading others in vocal or instrumental worship.",gift:"Music/Worship"},
+{text:"Caring for the hurting is paramount in my eyes.",gift:"Pastor/Shepherd"},
+{text:"I enjoy connecting, caring, and coaching others.",gift:"Pastor/Shepherd"},
+{text:"I enjoy walking with someone in times of direst.",gift:"Pastor/Shepherd"},
+{text:"The willful sin of others really aggravates me.",gift:"Prophecy"},
+{text:"Confronting someone with sin in their life is not hard.",gift:"Prophecy"},
+{text:"I enjoy hearing passionate and clear preaching of the truth.",gift:"Prophecy"},
+{text:"I enjoy serving behind the scenes.",gift:"Service"},
+{text:"It bothers me when people sit around and do nothing.",gift:"Service"},
+{text:"I like to do small things that others pass over.",gift:"Service"},
+{text:"I enjoy creating outlines of the Bible.",gift:"Teaching"},
+{text:"I share biblical truth with others in hopes of their personal growth.",gift:"Teaching"},
+{text:"I prefer to teach the Bible topically rather than verse by verse.",gift:"Teaching"},
+{text:"God has used me to interpret a heavenly language.",gift:"Tongues (and Interpretation)"},
+{text:"I pray in tongues daily.",gift:"Tongues (and Interpretation)"},
+{text:"Praying in the Spirit is encouraging and important to me.",gift:"Tongues (and Interpretation)"},
+{text:"I enjoy the book of Proverbs more than any other book in the Bible.",gift:"Wisdom"},
+{text:"When I study Scripture God gives me unique insights.",gift:"Wisdom"},
+{text:"When faced with difficulty I tend to make wise decisions and choices.",gift:"Wisdom"}
+];
+
+function start201(){
+  level = 201;
+  i = 0;
+  answers = [];
+  list = lvl201_questions;
+  render();
+}
+
+</script>
 </head>
-
 <body>
 <div id="app"></div>
-
 <script>
 const lvl1=[{gift:"Leadership",text:"I take responsibility for guiding a group toward a clear outcome."},{gift:"Leadership",text:"I step in when direction is lacking."},{gift:"Leadership",text:"I make decisions that move people forward."},{gift:"Leadership",text:"I feel responsible for the results of a group or effort."},{gift:"Leadership",text:"I guide others through uncertainty with clarity."},{gift:"Leadership",text:"I ensure progress continues despite obstacles."},{gift:"Leadership",text:"I move people forward even when there is resistance."},{gift:"Leadership",text:"I carry the weight of direction and outcomes for others."},{gift:"Administration",text:"I recognize how people should be positioned for maximum effectiveness."},{gift:"Administration",text:"I see how roles, timing, and responsibilities fit together."},{gift:"Administration",text:"I organize people in ways that improve overall results."},{gift:"Administration",text:"I notice when someone is not functioning in the right role."},{gift:"Administration",text:"I align people and responsibilities toward a common objective."},{gift:"Administration",text:"I think about how to improve flow and coordination among people."},{gift:"Administration",text:"I prevent conflicts by organizing roles and timing effectively."},{gift:"Administration",text:"I structure people and responsibilities for optimal outcomes."},{gift:"Knowledge",text:"I recognize patterns and connections others do not see."},{gift:"Knowledge",text:"I uncover deeper meaning through reflection and study."},{gift:"Knowledge",text:"I connect ideas across different topics and contexts."},{gift:"Knowledge",text:"I pursue deeper understanding beyond surface-level explanations."},{gift:"Knowledge",text:"I think deeply about concepts and underlying truth."},{gift:"Knowledge",text:"I gain insight that others may overlook."},{gift:"Knowledge",text:"I understand concepts at a deeper level than what is presented."},{gift:"Knowledge",text:"I integrate multiple truths into a clearer overall understanding."},{gift:"Discernment",text:"I sense when something is not right beneath the surface."},{gift:"Discernment",text:"I detect motives and intentions others may miss."},{gift:"Discernment",text:"I distinguish between what is true and what is misleading."},{gift:"Discernment",text:"I notice inconsistencies that reveal deeper issues."},{gift:"Discernment",text:"I perceive underlying influences affecting a situation."},{gift:"Discernment",text:"I recognize misalignment even when it is subtle."},{gift:"Discernment",text:"I identify what is truly happening beyond appearances."},{gift:"Discernment",text:"I detect when something appears right but is not."},{gift:"Wisdom",text:"I see the likely outcome of decisions before they are made."},{gift:"Wisdom",text:"I recognize the best course of action in complex situations."},{gift:"Wisdom",text:"I understand the right timing for decisions."},{gift:"Wisdom",text:"I help others avoid mistakes through practical insight."},{gift:"Wisdom",text:"I apply truth effectively to real-life situations."},{gift:"Wisdom",text:"I bring clarity when situations are complicated."},{gift:"Wisdom",text:"I recognize long-term consequences of choices."},{gift:"Wisdom",text:"I identify the most appropriate path forward."},{gift:"Teaching",text:"I explain complex truth in ways others can understand."},{gift:"Teaching",text:"I recognize when someone does not fully understand something."},{gift:"Teaching",text:"I simplify ideas without losing meaning."},{gift:"Teaching",text:"I organize information for clarity and comprehension."},{gift:"Teaching",text:"I help others grasp difficult concepts."},{gift:"Teaching",text:"I adjust explanations based on the listener."},{gift:"Teaching",text:"I focus on helping others truly understand, not just hear."},{gift:"Teaching",text:"I communicate truth in a structured and clear way."},{gift:"Exhortation",text:"I help others see hope when they feel discouraged."},{gift:"Exhortation",text:"I give people confidence to move forward."},{gift:"Exhortation",text:"I encourage action even when others feel fear."},{gift:"Exhortation",text:"I help people keep going when they want to stop."},{gift:"Exhortation",text:"I strengthen others internally with encouragement."},{gift:"Exhortation",text:"I motivate people toward growth and progress."},{gift:"Exhortation",text:"I help others overcome hesitation and doubt."},{gift:"Exhortation",text:"I instill courage that leads to forward movement."},{gift:"Service",text:"I take action when something needs to be done."},{gift:"Service",text:"I notice practical needs others overlook."},{gift:"Service",text:"I follow through until tasks are completed."},{gift:"Service",text:"I step in to help without being asked."},{gift:"Service",text:"I focus on getting things done efficiently."},{gift:"Service",text:"I support others through practical action."},{gift:"Service",text:"I respond quickly when help is needed."},{gift:"Service",text:"I ensure responsibilities are completed fully."},{gift:"Mercy",text:"I extend compassion when others fail or fall short."},{gift:"Mercy",text:"I choose understanding over judgment when others make mistakes."},{gift:"Mercy",text:"I respond gently when others struggle or fail."},{gift:"Mercy",text:"I desire to forgive rather than condemn."},{gift:"Mercy",text:"I show grace even when it is not deserved."},{gift:"Mercy",text:"I seek to restore rather than judge others."},{gift:"Mercy",text:"I respond with kindness in situations involving failure."},{gift:"Mercy",text:"I reflect forgiveness and compassion in difficult situations."},{gift:"Hospitality",text:"I open my home or space to others willingly."},{gift:"Hospitality",text:"I enjoy hosting and bringing people together."},{gift:"Hospitality",text:"I make people feel welcome quickly."},{gift:"Hospitality",text:"I create environments where people feel they belong."},{gift:"Hospitality",text:"I intentionally include those who may feel left out."},{gift:"Hospitality",text:"I make others feel comfortable and at ease."},{gift:"Hospitality",text:"I bring people together in meaningful ways."},{gift:"Hospitality",text:"I remove barriers so others feel accepted."},{gift:"Giving",text:"I find joy in giving my resources to meet needs."},{gift:"Giving",text:"I give willingly rather than out of obligation."},{gift:"Giving",text:"I am eager to give when I see a need."},{gift:"Giving",text:"I trust God as I give, even when it requires sacrifice."},{gift:"Giving",text:"I see my resources as something to be shared."},{gift:"Giving",text:"I look for opportunities to give, not just respond when asked."},{gift:"Giving",text:"I recognize where giving will have the greatest impact."},{gift:"Giving",text:"I see myself as a steward of resources rather than an owner."},{gift:"Prophecy",text:"I feel compelled to speak truth that aligns with God’s will."},{gift:"Prophecy",text:"I speak when correction or alignment is needed."},{gift:"Prophecy",text:"I communicate truth with conviction and clarity."},{gift:"Prophecy",text:"I feel a burden to share what God reveals."},{gift:"Prophecy",text:"I address misalignment directly rather than avoiding it."},{gift:"Prophecy",text:"I communicate truth beyond personal opinion."},{gift:"Prophecy",text:"I speak truth even when it is difficult."},{gift:"Prophecy",text:"I feel responsible to share truth for alignment."},{gift:"Evangelism",text:"I am drawn to people who do not know Christ."},{gift:"Evangelism",text:"I initiate conversations about faith naturally."},{gift:"Evangelism",text:"I share the message of the gospel clearly."},{gift:"Evangelism",text:"I feel urgency for others to come to faith."},{gift:"Evangelism",text:"I connect easily with those outside the faith."},{gift:"Evangelism",text:"I help others move toward belief in Christ."},{gift:"Evangelism",text:"I look for opportunities to share the gospel."},{gift:"Evangelism",text:"I am energized when others respond to faith."},{gift:"Apostleship",text:"I am drawn to start new works where none exist."},{gift:"Apostleship",text:"I build structures that others can grow from."},{gift:"Apostleship",text:"I establish strong foundations for new efforts."},{gift:"Apostleship",text:"I think beyond existing systems and structures."},{gift:"Apostleship",text:"I strengthen and guide developing works."},{gift:"Apostleship",text:"I see the big picture across multiple efforts."},{gift:"Apostleship",text:"I help align and connect different initiatives."},{gift:"Apostleship",text:"I create environments where new growth can happen."},{gift:"Shepherding",text:"I feel responsible for the spiritual growth of specific people over time."},{gift:"Shepherding",text:"I remain committed to people even when progress is slow."},{gift:"Shepherding",text:"I notice when someone is drifting before it becomes obvious."},{gift:"Shepherding",text:"I feel responsible to help others stay grounded in truth."},{gift:"Shepherding",text:"I invest in people consistently, not just when issues arise."},{gift:"Shepherding",text:"I guide others toward maturity over time."},{gift:"Shepherding",text:"I feel a burden to protect others from harmful influences."},{gift:"Shepherding",text:"I take responsibility for the well-being of those entrusted to me."},{gift:"Faith",text:"I trust God even when I cannot see how things will work out."},{gift:"Faith",text:"I remain confident when circumstances are uncertain."},{gift:"Faith",text:"I believe God will act even without visible evidence."},{gift:"Faith",text:"I stay steady when others begin to doubt."},{gift:"Faith",text:"I rely on God when outcomes are unclear."},{gift:"Faith",text:"I bring confidence to others through my trust in God."},{gift:"Faith",text:"I remain stable under pressure because of my belief."},{gift:"Faith",text:"I hold onto trust even when others struggle to do so."}];
 const lvl2=[{gift:"Administration",type:"Evidence",text:"Others have seen that I understand how to organize people, resources, and tasks in a way that works effectively"},{gift:"Apostleship",type:"Evidence",text:"Others have seen that I can start and establish new ministries or initiatives that continue to grow and develop"},{gift:"Discernment",type:"Evidence",text:"Others have affirmed my ability to sense what is true or not"},{gift:"Encouragement",type:"Evidence",text:"Others have told me that my words have helped them keep going or grow"},{gift:"Evangelism",type:"Evidence",text:"Others have seen people respond positively when I share my faith"},{gift:"Faith",type:"Evidence",text:"Others have seen me act with confidence in God even when the situation seems uncertain or unlikely"},{gift:"Giving",type:"Evidence",text:"Others have noticed and affirmed my generosity"},{gift:"Hospitality",type:"Evidence",text:"Others have expressed feeling welcomed and comfortable around me"},{gift:"Knowledge",type:"Evidence",text:"Others have recognized my ability to understand and explain deep truths"},{gift:"Leadership",type:"Evidence",text:"Others have affirmed my ability to lead or guide a group"},{gift:"Mercy",type:"Evidence",text:"Others have seen me move toward people who are messy, broken, or difficult to love rather than avoiding them"},{gift:"Prophecy",type:"Evidence",text:"Others have seen that I speak truth clearly and appropriately into situations where it is needed, even when it is difficult"},{gift:"Service",type:"Evidence",text:"Others have recognized my willingness to serve behind the scenes"},{gift:"Shepherding",type:"Evidence",text:"Others have seen that I take ongoing responsibility to care for and invest in specific people over time, helping them grow"},{gift:"Teaching",type:"Evidence",text:"Others have told me that I explain biblical truth in a clear and understandable way"},{gift:"Wisdom",type:"Evidence",text:"Others have seen that I bring clarity and direction in complex or uncertain situations"},{gift:"Administration",type:"Evidence",text:"People have relied on me to assign roles, coordinate efforts, and structure plans based on the strengths of those involved"},{gift:"Apostleship",type:"Evidence",text:"People have looked to me for insight and direction to help align ministries, leaders, or groups with what God is leading"},{gift:"Discernment",type:"Evidence",text:"People seek my perspective when unsure about a situation"},{gift:"Encouragement",type:"Evidence",text:"People often seek me out when they need encouragement or direction"},{gift:"Evangelism",type:"Evidence",text:"People affirm my ability to communicate the gospel clearly"},{gift:"Faith",type:"Evidence",text:"People have told me that my trust in God has strengthened their faith during difficult or uncertain situations"},{gift:"Giving",type:"Evidence",text:"People trust me to help meet needs when resources are required"},{gift:"Hospitality",type:"Evidence",text:"People often gather or feel at ease in environments I create"},{gift:"Knowledge",type:"Evidence",text:"People come to me for insight into complex spiritual topics"},{gift:"Leadership",type:"Evidence",text:"People naturally look to me for direction in group settings"},{gift:"Mercy",type:"Evidence",text:"People have told me they feel accepted and not judged by me, even when they have made mistakes or done wrong"},{gift:"Prophecy",type:"Evidence",text:"People have told me that what I said brought clarity, conviction, or encouragement that felt timely and aligned with God’s truth"},{gift:"Service",type:"Evidence",text:"People rely on me to help get things done"},{gift:"Shepherding",type:"Evidence",text:"People have trusted me to guide, support, and look after their spiritual well-being over time"},{gift:"Teaching",type:"Evidence",text:"People often come to me when they want help understanding Scripture"},{gift:"Wisdom",type:"Evidence",text:"People have relied on my guidance to help make important decisions or determine the best path forward"},{gift:"Administration",type:"Frequency",text:"I regularly think about how to organize people, resources, and tasks in a way that works effectively"},{gift:"Apostleship",type:"Frequency",text:"I regularly think about how to start, expand, or develop new ministries, groups, or initiatives"},{gift:"Discernment",type:"Frequency",text:"I regularly sense when something is right or wrong beneath the surface"},{gift:"Encouragement",type:"Frequency",text:"I regularly notice when others need encouragement or motivation"},{gift:"Evangelism",type:"Frequency",text:"I regularly look for opportunities to share my faith with others"},{gift:"Faith",type:"Frequency",text:"I regularly trust God and remain confident in Him even when situations seem uncertain or unlikely"},{gift:"Giving",type:"Frequency",text:"I regularly look for opportunities to give or support others financially"},{gift:"Hospitality",type:"Frequency",text:"I regularly create environments where others feel welcomed and comfortable"},{gift:"Knowledge",type:"Frequency",text:"I regularly seek to understand deeper spiritual or biblical truths"},{gift:"Leadership",type:"Frequency",text:"I regularly take initiative to guide or organize groups of people"},{gift:"Mercy",type:"Frequency",text:"I regularly find myself drawn toward people who are hurting, struggling, or difficult to love"},{gift:"Prophecy",type:"Frequency",text:"I regularly recognize when truth needs to be spoken into a situation and speak up appropriately"},{gift:"Service",type:"Frequency",text:"I regularly look for ways to help and support others in practical ways"},{gift:"Shepherding",type:"Frequency",text:"I regularly stay connected with and invest in the same people over time, helping them grow"},{gift:"Teaching",type:"Frequency",text:"I regularly find myself explaining spiritual or biblical concepts to others"},{gift:"Wisdom",type:"Frequency",text:"I regularly help others determine the best course of action in complex or uncertain situations"},{gift:"Administration",type:"Frequency",text:"I often consider how to assign roles and coordinate efforts based on the strengths of those involved"},{gift:"Apostleship",type:"Frequency",text:"I often find myself considering the big picture and how multiple people, leaders, or groups can be aligned and strengthened"},{gift:"Discernment",type:"Frequency",text:"I often evaluate situations carefully to determine truth or error"},{gift:"Encouragement",type:"Frequency",text:"I often speak up to strengthen or inspire others"},{gift:"Evangelism",type:"Frequency",text:"I often engage others in conversations about the gospel"},{gift:"Faith",type:"Frequency",text:"I often feel confident that God will act even when I cannot see how things will work out"},{gift:"Giving",type:"Frequency",text:"I often give willingly even when it requires sacrifice"},{gift:"Hospitality",type:"Frequency",text:"I often think about how to make others feel included and at ease"},{gift:"Knowledge",type:"Frequency",text:"I often reflect on and connect insights about Scripture or spiritual concepts"},{gift:"Leadership",type:"Frequency",text:"I often step into leadership roles when direction is needed"},{gift:"Mercy",type:"Frequency",text:"I often respond with compassion and understanding when others are quick to judge or withdraw"},{gift:"Prophecy",type:"Frequency",text:"I often speak truth into situations in a way that brings clarity, conviction, or encouragement"},{gift:"Service",type:"Frequency",text:"I often step in to assist with tasks without being asked"},{gift:"Shepherding",type:"Frequency",text:"I often feel responsible to guide, support, and check in on the well-being of specific people"},{gift:"Teaching",type:"Frequency",text:"I often look for opportunities to help others understand Scripture more clearly"},{gift:"Wisdom",type:"Frequency",text:"I often see how truth should be applied to real situations to guide decisions and direction"},{gift:"Administration",type:"Outcome",text:"Plans, processes, and efforts run smoothly, clearly, and effectively because of how I organize them"},{gift:"Apostleship",type:"Outcome",text:"New ministries, groups, or initiatives are started and continue to grow because of my involvement"},{gift:"Discernment",type:"Outcome",text:"Truth and error become clearer in situations because of my insight"},{gift:"Encouragement",type:"Outcome",text:"People feel strengthened, motivated, or renewed after interacting with me"},{gift:"Evangelism",type:"Outcome",text:"People come to understand or respond to the gospel when I share my faith"},{gift:"Faith",type:"Outcome",text:"Others grow in confidence and trust in God because of how I respond in situations"},{gift:"Giving",type:"Outcome",text:"Real needs are met because of my generosity"},{gift:"Hospitality",type:"Outcome",text:"People feel welcomed, comfortable, and valued in environments I create"},{gift:"Knowledge",type:"Outcome",text:"Others gain deeper understanding of spiritual or biblical truths through me"},{gift:"Leadership",type:"Outcome",text:"People follow direction and progress is made when I lead"},{gift:"Mercy",type:"Outcome",text:"People feel accepted, understood, and not judged when they are around me"},{gift:"Prophecy",type:"Outcome",text:"People experience clarity, conviction, or encouragement when I speak into situations"},{gift:"Service",type:"Outcome",text:"Tasks and responsibilities are completed effectively because of my help"},{gift:"Shepherding",type:"Outcome",text:"People grow spiritually and remain supported over time because of my care"},{gift:"Teaching",type:"Outcome",text:"People gain clear understanding of Scripture or spiritual truth when I explain it"},{gift:"Wisdom",type:"Outcome",text:"People make better decisions and choose the right path after receiving my guidance"},{gift:"Administration",type:"Outcome",text:"People are able to function in their strengths and work together effectively because of my coordination"},{gift:"Apostleship",type:"Outcome",text:"Leaders and groups become aligned and strengthened under my guidance"},{gift:"Discernment",type:"Outcome",text:"Others avoid mistakes or deception because of my perspective"},{gift:"Encouragement",type:"Outcome",text:"Others take positive action or move forward because of my encouragement"},{gift:"Evangelism",type:"Outcome",text:"Others are more open to spiritual conversations because of how I communicate"},{gift:"Faith",type:"Outcome",text:"People take steps of faith or trust God in ways they otherwise would not because of my example"},{gift:"Giving",type:"Outcome",text:"My giving enables others or ministries to move forward effectively"},{gift:"Hospitality",type:"Outcome",text:"Others feel included and at ease because of my intentional efforts"},{gift:"Knowledge",type:"Outcome",text:"People are able to connect and understand complex ideas more clearly because of my insights"},{gift:"Leadership",type:"Outcome",text:"Groups I lead tend to move toward clear goals and accomplish them"},{gift:"Mercy",type:"Outcome",text:"Those who are struggling or broken experience comfort, acceptance, and restoration through my presence"},{gift:"Prophecy",type:"Outcome",text:"Situations are addressed clearly and at the right time because I speak truth when it is needed"},{gift:"Service",type:"Outcome",text:"Others are freed up to focus on their priorities because I step in to assist"},{gift:"Shepherding",type:"Outcome",text:"Those I invest in feel guided, stable, and cared for in their spiritual journey"},{gift:"Teaching",type:"Outcome",text:"Others are able to apply biblical truth more accurately because of my explanations"},{gift:"Wisdom",type:"Outcome",text:"Complex situations become clearer and more manageable because of my input"},{gift:"Administration",type:"Effort",text:"Organizing people, resources, and tasks in a way that works effectively comes naturally to me"},{gift:"Apostleship",type:"Effort",text:"Thinking about starting and developing new ministries or initiatives comes naturally to me"},{gift:"Discernment",type:"Effort",text:"Recognizing what is true or false beneath the surface comes naturally to me"},{gift:"Encouragement",type:"Effort",text:"Encouraging and motivating others comes naturally to me in conversations"},{gift:"Evangelism",type:"Effort",text:"Talking about my faith and engaging others in spiritual conversations comes naturally to me"},{gift:"Faith",type:"Effort",text:"Trusting God and remaining confident in Him comes naturally to me, even in uncertain situations"},{gift:"Giving",type:"Effort",text:"Giving to meet the needs of others comes naturally to me without hesitation"},{gift:"Hospitality",type:"Effort",text:"Creating welcoming and comfortable environments for others comes naturally to me"},{gift:"Knowledge",type:"Effort",text:"Understanding deeper spiritual or biblical truths comes naturally to me"},{gift:"Leadership",type:"Effort",text:"Taking initiative to guide and direct others comes naturally to me"},{gift:"Mercy",type:"Effort",text:"Showing compassion and understanding toward others comes naturally to me, even in difficult situations"},{gift:"Prophecy",type:"Effort",text:"Recognizing when truth needs to be spoken into a situation comes naturally to me"},{gift:"Service",type:"Effort",text:"Helping and supporting others in practical ways comes naturally to me"},{gift:"Shepherding",type:"Effort",text:"Caring for and investing in specific people over time comes naturally to me"},{gift:"Teaching",type:"Effort",text:"Explaining biblical or spiritual truth comes naturally to me, even without extensive preparation"},{gift:"Wisdom",type:"Effort",text:"Seeing how truth should be applied to real situations comes naturally to me"},{gift:"Administration",type:"Cost",text:"I continue to coordinate and structure efforts even when situations are complex or demanding"},{gift:"Apostleship",type:"Cost",text:"I continue to invest in building and guiding new works even when it requires long-term effort"},{gift:"Discernment",type:"Cost",text:"I continue to evaluate situations carefully even when it requires patience and caution"},{gift:"Encouragement",type:"Cost",text:"I continue to encourage others even when I feel tired or discouraged myself"},{gift:"Evangelism",type:"Cost",text:"I continue to share my faith even when it is uncomfortable or not well received"},{gift:"Faith",type:"Cost",text:"I continue to trust God even when situations become difficult or outcomes are unclear"},{gift:"Giving",type:"Cost",text:"I continue to give even when it requires personal sacrifice"},{gift:"Hospitality",type:"Cost",text:"I continue to host and care for others even when it requires extra effort or planning"},{gift:"Knowledge",type:"Cost",text:"I continue to pursue and share insight even when it requires significant study or effort"},{gift:"Leadership",type:"Cost",text:"I continue leading even when it becomes stressful or demanding"},{gift:"Mercy",type:"Cost",text:"I continue to care for and support people even when it is emotionally draining or inconvenient"},{gift:"Prophecy",type:"Cost",text:"I continue to speak truth even when it is difficult or uncomfortable to do so"},{gift:"Service",type:"Cost",text:"I continue to serve even when my efforts go unnoticed or unappreciated"},{gift:"Shepherding",type:"Cost",text:"I continue to support and guide people even when it requires ongoing time and energy"},{gift:"Teaching",type:"Cost",text:"I continue helping others understand truth even when it requires extra time or effort"},{gift:"Wisdom",type:"Cost",text:"I continue to help others make wise decisions even when it requires time and careful thought"}];
-const explanations={"Faith": ["You trust God with confidence even when outcomes are uncertain.", "Others are strengthened and encouraged to trust God through your example.", "Abraham", "Hebrews 11:1"], "Mercy": ["You move toward people others avoid and show compassion without judgment.", "Others feel accepted, understood, and safe around you.", "Good Samaritan", "Luke 10:33-34"], "Wisdom": ["You apply truth and insight to real-life situations.", "Others make better decisions because of your guidance.", "Solomon", "James 1:5"], "Leadership": ["You guide people toward direction and progress.", "Groups move forward effectively under your leadership.", "Nehemiah", "Nehemiah 2:17-18"], "Teaching": ["You explain truth clearly and help others understand.", "Others gain clarity and grow in understanding.", "Ezra", "Romans 12:7"], "Encouragement": ["You strengthen and uplift others through your words.", "Others feel renewed and motivated because of you.", "Barnabas", "Romans 12:8"], "Giving": ["You generously share resources to meet needs.", "Others are supported and ministry advances through your giving.", "Widow", "2 Corinthians 9:7"], "Service": ["You meet practical needs with humility and action.", "Others are helped and supported through your service.", "Martha", "Galatians 5:13"], "Hospitality": ["You create welcoming and inclusive environments.", "Others feel valued and a sense of belonging.", "Lydia", "1 Peter 4:9"], "Knowledge": ["You understand deeper truths and insights.", "Others gain understanding through your insights.", "Paul", "1 Corinthians 12:8"], "Discernment": ["You recognize truth from error clearly.", "Others avoid mistakes and gain clarity through you.", "John", "1 John 4:1"], "Evangelism": ["You clearly communicate the message of faith.", "Others respond positively and move toward faith.", "Philip", "Acts 8:5-6"], "Apostleship": ["You start and build new works or ministries.", "Others are aligned and new initiatives grow through you.", "Paul", "Ephesians 4:11"], "Shepherding": ["You care for people consistently over time.", "Others feel guided, supported, and protected.", "Peter", "1 Peter 5:2-3"], "Administration": ["You organize people and systems effectively.", "Others function better because of your coordination.", "Joseph", "Genesis 41:39-41"]};
+
 
 let list=[],answers=[],i=0,level=1,topResults=[];
 
@@ -176,7 +572,6 @@ function interpret(score){
   if(score >= 50) return "Possible / emerging";
   return "Less evident";
 }
-
 
 function intro(){
 document.getElementById("app").innerHTML=`
@@ -237,28 +632,32 @@ Rather than measuring effort alone, this tool helps reveal patterns of how God m
 “Each of you should use whatever gift you have received to serve others.” — 1 Peter 4:10
 </p>
 
-<h3>Select Level</h3>
+<h3>Choose Your Assessment Approach</h3>
 
-<div class="small">
-<p><b>Quick Insight</b><br>
-Fast and simple. Based on your personal responses.</p>
+<div class="assessment-options">
+  <div class="assessment-option">
+    <h4>Quick Insight</h4>
+    <p>A fast personal reflection based on your responses.</p>
+    <button onclick="start(1)">Start Quick Insight</button>
+  </div>
 
-<p><b>Guided Discernment</b><br>
-More accurate. Evaluates patterns like consistency, impact, and effort.</p>
+  <div class="assessment-option recommended-option">
+    <div class="option-title-row">
+      <h4>Guided Discernment</h4>
+      <span class="recommended-pill">Recommended</span>
+    </div>
+    <p>Questions that explore patterns in your life, the frequency of those experiences, and what others have observed in you.</p>
+    <button onclick="start(2)">Start Guided Discernment</button>
+  </div>
 
-Most complete. Designed to include input from others who know you well.</p>
-
-<p><i>Recommended: Guided Discernment</i></p>
-</div>
-
-<div class="level-buttons">
-  <button onclick="start(1)">Quick Insight</button>
-  <button onclick="start(2)">Guided Discernment</button>
+  <div class="assessment-option">
+    <h4>Expanded Gifts Discovery</h4>
+    <p>Based on the Serve Team 201 assessment, covering additional gifts such as healing and miracles.</p>
+    <button class="gold-btn" onclick="start201()">Start Expanded Gifts Discovery</button>
+  </div>
 </div>
 `;
 }
-
-
 
 function start(l){
 level=l;
@@ -268,7 +667,17 @@ i=0;
 render();
 }
 
+function getAssessmentTitle(){
+  if(level===1) return 'Quick Insight Assessment';
+  if(level===2) return 'Guided Discernment Assessment';
+  if(level===201) return 'Expanded Gifts Discovery Assessment';
+  return 'Assessment';
+}
+
 function render(){
+if(!level || !list || !list.length){
+  return intro();
+}
 if(i>=list.length) return results();
 
 let answered = answers.filter(v=>v!==null).length;
@@ -276,6 +685,9 @@ let p=Math.round((answered/list.length)*100);
 let currentAnswer = answers[i];
 
 document.getElementById("app").innerHTML=`
+<div class="assessment-header">
+  <div class="assessment-header-title">${getAssessmentTitle()}</div>
+</div>
 <div class="progress-meta">
   <p class="small">Question ${i+1} of ${list.length}</p>
   <div class="progress-pill">${answered} of ${list.length} answered • ${p}%</div>
@@ -289,7 +701,7 @@ document.getElementById("app").innerHTML=`
     ${[1,2,3,4,5].map(n=>`<button class="${currentAnswer===n?'selected':''}" onclick="ans(${n})">${n}</button>`).join("")}
   </div>
   <div class="nav-row">
-    ${i>0?'<button onclick="back()">Back</button>':'<div class="spacer"></div>'}
+    ${i===0?'<button onclick="changeAssessment()">← Change Assessment</button>':'<button onclick="back()">← Back</button>'}
   </div>
 </div>
 `;
@@ -311,6 +723,15 @@ if(i>0){
 }
 }
 
+function changeAssessment(){
+level = 0;
+i = 0;
+answers = [];
+list = [];
+topResults = [];
+render();
+}
+
 function results(){
 let scores={};
 list.forEach((q,idx)=>{
@@ -318,20 +739,19 @@ if(!scores[q.gift]) scores[q.gift]=[];
 scores[q.gift].push({val:answers[idx],type:q.type});
 });
 
-
 function renderTopCards(topResults){
   return `
     <div class="top-cards">
       ${topResults.map(([g,v],i)=>{
-        let e = explanations[g] || ["","","",""];
+        let e = explanations[g] || {};
         return `
           <div class="top-card ${i===0?'top-1':''}">
             <h3>${g} — <span class="score">${v}</span></h3>
             <p class="card-highlight">${interpret(v)}</p>
-            <p><b>What this means:</b><br>${e[0]}</p>
-            <p><b>What others experience:</b><br>${e[1]}</p>
-            <p class="small"><b>Biblical example:</b> ${e[2]}</p>
-            <p class="small"><b>Scripture:</b> ${e[3]}</p>
+            <p><b>What this means:</b><br>${e.meaning || ""}</p>
+            <p><b>What others experience:</b><br>${e.experience || ""}</p>
+            <p class="small"><b>Biblical example:</b> ${e.example || ""}</p>
+            <p class="small"><b>Scripture:</b> ${e.scripture || ""}</p>
           </div>
         `;
       }).join("")}
@@ -386,14 +806,13 @@ document.getElementById("app").innerHTML=`
 <h2>Your Primary Gifts</h2>
 ${renderTopCards(topResults)}
 
-
 <canvas id="bar"></canvas>
 <canvas id="radar"></canvas>
 ${renderCardsHTML(sorted)}
 </div>
 
 <div class="results-actions">
-  <button onclick="downloadPDF_clean()">Download PDF</button>
+  <button onclick="downloadPDF()">Download PDF</button>
   <button onclick="shareResults()">Share</button>
   <button onclick="copyResults()">Copy Results</button>
   <button onclick="intro()">Try Again</button>
@@ -410,19 +829,6 @@ type:'radar',
 data:{labels:sorted.map(x=>x[0]),datasets:[{label:'Profile',data:sorted.map(x=>x[1])}]}
 });
 }
-
-async function downloadPDF_clean(){
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("resultsContent");
-  const canvas = await html2canvas(element);
-  const imgData = canvas.toDataURL("image/png");
-  const pdf = new jsPDF();
-  const width = pdf.internal.pageSize.getWidth();
-  const height = (canvas.height * width) / canvas.width;
-  pdf.addImage(imgData, "PNG", 0, 0, width, height);
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
 function shareResults(){
   let text = "My Spiritual Gifts Results:\n";
   topResults.forEach(([g,v])=>{ text += g + ": " + v + "/100\n"; });
@@ -477,40 +883,7 @@ function calculateScores(){
   return scores;
 }
 
-
-
-
 // ===== SAFE PDF FUNCTION =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
 // ===== SAFE SHARE FUNCTION =====
 function shareResults() {
   const text = document.getElementById("app").innerText;
@@ -525,125 +898,6 @@ function shareResults() {
     alert("Sharing not supported here. Results copied to clipboard instead.");
   }
 }
-
-
-
-// ===== FINAL PDF (NO SCALE, NO CLONE, PRESERVE CHARTS) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  // Apply PDF styling (no transform!)
-  element.classList.add("pdf-mode");
-
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  // Remove styling
-  element.classList.remove("pdf-mode");
-
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = -(imgHeight - heightLeft);
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-
-// ===== SAFE PDF OVERRIDE (FINAL) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const margin = 10;
-  const width = 190;
-
-  const capture = async (el) => {
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
-    return canvas;
-  };
-
-  // PAGE 1
-  const top = document.createElement("div");
-  top.appendChild(document.querySelector(".app-header").cloneNode(true));
-  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
-
-  document.body.appendChild(top);
-  const canvas1 = await capture(top);
-  document.body.removeChild(top);
-
-  const h1 = (canvas1.height * width) / canvas1.width;
-  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
-
-  // PAGE 2 BAR (CAPPED HEIGHT)
-  pdf.addPage();
-  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
-
-  let barHeight = (barCanvas.height * width) / barCanvas.width;
-  const maxHeight = 250;
-  if (barHeight > maxHeight) barHeight = maxHeight;
-
-  const yBar = (297 - barHeight) / 2;
-
-  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
-
-  // PAGE 3 RADAR + SUMMARY
-  pdf.addPage();
-  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
-
-  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
-  if (radarHeight > 130) radarHeight = 130;
-
-  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
-
-  const summary = document.querySelector(".results-cards");
-  if (summary) {
-    const summaryCanvas = await capture(summary);
-    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
-    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// FORCE override without deleting original logic
-window.downloadPDF = downloadPDF_clean;
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btns = document.querySelectorAll("button");
-  btns.forEach(btn => {
-    if (btn.innerText.toLowerCase().includes("download")) {
-      btn.onclick = downloadPDF_clean;
-    }
-  });
-});
 
 </script>
 <script>
@@ -682,454 +936,160 @@ function calculateScores(){
   return scores;
 }
 
-
-
-// ===== FINAL PDF (clean layout, charts preserved, no buttons) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const element = document.getElementById("app");
-
-  element.classList.add("pdf-mode");
-
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  element.classList.remove("pdf-mode");
-
-  const imgData = canvas.toDataURL("image/png");
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position = -(imgHeight - heightLeft);
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// ===== SAFE PDF OVERRIDE (FINAL) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const margin = 10;
-  const width = 190;
-
-  const capture = async (el) => {
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
-    return canvas;
-  };
-
-  // PAGE 1
-  const top = document.createElement("div");
-  top.appendChild(document.querySelector(".app-header").cloneNode(true));
-  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
-
-  document.body.appendChild(top);
-  const canvas1 = await capture(top);
-  document.body.removeChild(top);
-
-  const h1 = (canvas1.height * width) / canvas1.width;
-  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
-
-  // PAGE 2 BAR (CAPPED HEIGHT)
-  pdf.addPage();
-  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
-
-  let barHeight = (barCanvas.height * width) / barCanvas.width;
-  const maxHeight = 250;
-  if (barHeight > maxHeight) barHeight = maxHeight;
-
-  const yBar = (297 - barHeight) / 2;
-
-  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
-
-  // PAGE 3 RADAR + SUMMARY
-  pdf.addPage();
-  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
-
-  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
-  if (radarHeight > 130) radarHeight = 130;
-
-  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
-
-  const summary = document.querySelector(".results-cards");
-  if (summary) {
-    const summaryCanvas = await capture(summary);
-    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
-    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// FORCE override without deleting original logic
-window.downloadPDF = downloadPDF_clean;
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btns = document.querySelectorAll("button");
-  btns.forEach(btn => {
-    if (btn.innerText.toLowerCase().includes("download")) {
-      btn.onclick = downloadPDF_clean;
-    }
-  });
-});
-
 </script>
-<script>
-// ===== FINAL PDF (WORKING - REAL CANVAS CAPTURE) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
 
-  const app = document.getElementById("app");
-  const canvases = app.querySelectorAll("canvas");
-
-  app.classList.add("pdf-mode");
-
-  // ===== PAGE 1 =====
-  const radar = canvases[canvases.length - 1];
-  const originalRadarDisplay = radar.style.display;
-  radar.style.display = "none";
-
-  const canvas1 = await html2canvas(app, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  const img1 = canvas1.toDataURL("image/png");
-  const pageWidth = 210;
-  const imgHeight1 = (canvas1.height * pageWidth) / canvas1.width;
-
-  pdf.addImage(img1, "PNG", 0, 0, pageWidth, imgHeight1);
-
-  // ===== PAGE 2 =====
-  radar.style.display = originalRadarDisplay;
-
-  const children = Array.from(app.children);
-  const hidden = [];
-
-  children.forEach(el => {
-    if (!el.contains(radar)) {
-      hidden.push(el);
-      el.style.display = "none";
-    }
-  });
-
-  const canvas2 = await html2canvas(app, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  const img2 = canvas2.toDataURL("image/png");
-  const imgHeight2 = (canvas2.height * pageWidth) / canvas2.width;
-
-  pdf.addPage();
-  pdf.addImage(img2, "PNG", 0, 20, pageWidth, imgHeight2);
-
-  // ===== RESTORE =====
-  hidden.forEach(el => el.style.display = "");
-  app.classList.remove("pdf-mode");
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// ===== SAFE PDF OVERRIDE (FINAL) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const margin = 10;
-  const width = 190;
-
-  const capture = async (el) => {
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
-    return canvas;
-  };
-
-  // PAGE 1
-  const top = document.createElement("div");
-  top.appendChild(document.querySelector(".app-header").cloneNode(true));
-  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
-
-  document.body.appendChild(top);
-  const canvas1 = await capture(top);
-  document.body.removeChild(top);
-
-  const h1 = (canvas1.height * width) / canvas1.width;
-  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
-
-  // PAGE 2 BAR (CAPPED HEIGHT)
-  pdf.addPage();
-  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
-
-  let barHeight = (barCanvas.height * width) / barCanvas.width;
-  const maxHeight = 250;
-  if (barHeight > maxHeight) barHeight = maxHeight;
-
-  const yBar = (297 - barHeight) / 2;
-
-  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
-
-  // PAGE 3 RADAR + SUMMARY
-  pdf.addPage();
-  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
-
-  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
-  if (radarHeight > 130) radarHeight = 130;
-
-  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
-
-  const summary = document.querySelector(".results-cards");
-  if (summary) {
-    const summaryCanvas = await capture(summary);
-    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
-    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// FORCE override without deleting original logic
-window.downloadPDF = downloadPDF_clean;
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btns = document.querySelectorAll("button");
-  btns.forEach(btn => {
-    if (btn.innerText.toLowerCase().includes("download")) {
-      btn.onclick = downloadPDF_clean;
-    }
-  });
-});
-
-</script>
-<script>
-// ===== TRUE FINAL PDF (DIRECT CANVAS CAPTURE) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const app = document.getElementById("app");
-  const canvases = app.querySelectorAll("canvas");
-
-  const bar = canvases[0];
-  const radar = canvases[canvases.length - 1];
-
-  app.classList.add("pdf-mode");
-
-  // ===== PAGE 1 (hide radar) =====
-  const radarDisplay = radar.style.display;
-  radar.style.display = "none";
-
-  const canvas1 = await html2canvas(app, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: 800
-  });
-
-  const img1 = canvas1.toDataURL("image/png");
-  const pageWidth = 210;
-  const imgHeight1 = (canvas1.height * pageWidth) / canvas1.width;
-
-  pdf.addImage(img1, "PNG", 0, 0, pageWidth, imgHeight1);
-
-  // ===== PAGE 2 (DIRECT radar capture — no html2canvas) =====
-  radar.style.display = radarDisplay;
-
-  const radarImg = radar.toDataURL("image/png");
-
-  const radarWidth = pageWidth;
-  const radarHeight = (radar.height * radarWidth) / radar.width;
-
-  pdf.addPage();
-  pdf.addImage(radarImg, "PNG", 0, 40, radarWidth, radarHeight);
-
-  app.classList.remove("pdf-mode");
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// ===== SAFE PDF OVERRIDE (FINAL) =====
-async function downloadPDF_clean() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const margin = 10;
-  const width = 190;
-
-  const capture = async (el) => {
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
-    return canvas;
-  };
-
-  // PAGE 1
-  const top = document.createElement("div");
-  top.appendChild(document.querySelector(".app-header").cloneNode(true));
-  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
-
-  document.body.appendChild(top);
-  const canvas1 = await capture(top);
-  document.body.removeChild(top);
-
-  const h1 = (canvas1.height * width) / canvas1.width;
-  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
-
-  // PAGE 2 BAR (CAPPED HEIGHT)
-  pdf.addPage();
-  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
-
-  let barHeight = (barCanvas.height * width) / barCanvas.width;
-  const maxHeight = 250;
-  if (barHeight > maxHeight) barHeight = maxHeight;
-
-  const yBar = (297 - barHeight) / 2;
-
-  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
-
-  // PAGE 3 RADAR + SUMMARY
-  pdf.addPage();
-  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
-
-  let radarHeight = (radarCanvas.height * width) / radarCanvas.width;
-  if (radarHeight > 130) radarHeight = 130;
-
-  pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", margin, 10, width, radarHeight);
-
-  const summary = document.querySelector(".results-cards");
-  if (summary) {
-    const summaryCanvas = await capture(summary);
-    const summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
-    pdf.addImage(summaryCanvas.toDataURL("image/png"), "PNG", margin, 150, width, summaryHeight);
-  }
-
-  pdf.save("Spiritual_Gifts_Results.pdf");
-}
-
-// FORCE override without deleting original logic
-window.downloadPDF = downloadPDF_clean;
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btns = document.querySelectorAll("button");
-  btns.forEach(btn => {
-    if (btn.innerText.toLowerCase().includes("download")) {
-      btn.onclick = downloadPDF_clean;
-    }
-  });
-});
-
-</script>
+<div class="global-footer-note">
+  <div class="footer-inner">
+    <strong>A Note on Spiritual Gifts</strong><br>
+    This assessment identifies consistent patterns in how God has shaped and used you over time.<br>
+    Your results reflect consistent patterns in your life, not the full extent of how God may choose to work through you in a given moment.
+  </div>
+</div>
 </body>
 
 <script>
 
 // ===== SINGLE CLEAN PDF ENGINE =====
-async function downloadPDF_clean() {
+function buildPdfCard(card) {
+  const pdfCard = document.createElement("div");
+  pdfCard.className = "pdf-top-card" + (card.classList.contains("top-1") ? " top-1" : "");
+
+  const titleNode = card.querySelector("h3");
+  const scoreNode = titleNode ? titleNode.querySelector(".score") : null;
+  const titleText = titleNode ? titleNode.childNodes[0].textContent.replace(/—\s*$/, "").trim() : "";
+  const scoreText = scoreNode ? scoreNode.textContent.trim() : "";
+  const highlight = card.querySelector(".card-highlight")?.textContent.trim() || "";
+
+  const fields = {};
+  card.querySelectorAll("p").forEach(p => {
+    const text = p.innerText.trim();
+    const lower = text.toLowerCase();
+    if (lower.startsWith("what this means:")) fields.meaning = text.replace(/what this means:\s*/i, "");
+    else if (lower.startsWith("what others experience:")) fields.experience = text.replace(/what others experience:\s*/i, "");
+    else if (lower.startsWith("biblical example:")) fields.example = text.replace(/biblical example:\s*/i, "");
+    else if (lower.startsWith("scripture:")) fields.scripture = text.replace(/scripture:\s*/i, "");
+  });
+
+  pdfCard.innerHTML = `
+    <div class="pdf-top-card-header">
+      <div class="pdf-top-card-title">${titleText}</div>
+      <div class="pdf-score-wrap">
+        <div class="pdf-score-value">${scoreText}</div>
+        <div class="pdf-score-label">${highlight}</div>
+      </div>
+    </div>
+    <div class="pdf-columns">
+      <div class="pdf-col">
+        <p class="pdf-field"><strong>What this means</strong>${fields.meaning || ""}</p>
+        <p class="pdf-field pdf-muted"><strong>Scripture</strong>${fields.scripture || ""}</p>
+      </div>
+      <div class="pdf-col pdf-col-right">
+        <p class="pdf-field"><strong>What others experience</strong>${fields.experience || ""}</p>
+        <p class="pdf-field pdf-muted"><strong>Biblical Example</strong>${fields.example || ""}</p>
+      </div>
+    </div>
+  `;
+
+  return pdfCard;
+}
+
+function getCanvasImage(canvas) {
+  if (!canvas) return null;
+  const img = document.createElement("img");
+  img.src = canvas.toDataURL("image/png");
+  img.alt = "Chart";
+  return img;
+}
+
+function ensurePdfRoot() {
+  let root = document.getElementById("pdf-root");
+  if (!root) {
+    root = document.createElement("div");
+    root.id = "pdf-root";
+    root.setAttribute("aria-hidden", "true");
+    document.body.appendChild(root);
+  }
+  root.innerHTML = "";
+  return root;
+}
+
+function buildPdfPages() {
+  const root = ensurePdfRoot();
+  const header = document.querySelector(".app-header");
+  const cards = Array.from(document.querySelectorAll(".top-cards .top-card"));
+  const bar = document.getElementById("bar");
+  const radar = document.getElementById("radar");
+  const summary = document.querySelector(".results-cards");
+
+  if (!header || !cards.length || !bar || !radar) {
+    throw new Error("Results view is not ready for PDF generation.");
+  }
+
+  const page1 = document.createElement("section");
+  page1.className = "pdf-page page-1";
+  page1.appendChild(header.cloneNode(true));
+  const title = document.createElement("h2");
+  title.className = "pdf-section-title";
+  title.textContent = "Your Primary Gifts";
+  page1.appendChild(title);
+  const grid = document.createElement("div");
+  grid.className = "pdf-top-grid";
+  cards.slice(0, 3).forEach(card => grid.appendChild(buildPdfCard(card)));
+  page1.appendChild(grid);
+  root.appendChild(page1);
+
+  const page2 = document.createElement("section");
+  page2.className = "pdf-page page-2";
+  const barWrap = document.createElement("div");
+  barWrap.className = "pdf-chart-wrap";
+  const barImg = getCanvasImage(bar);
+  if (barImg) barWrap.appendChild(barImg);
+  page2.appendChild(barWrap);
+  root.appendChild(page2);
+
+  const page3 = document.createElement("section");
+  page3.className = "pdf-page page-3";
+  const radarWrap = document.createElement("div");
+  radarWrap.className = "pdf-radar-wrap";
+  const radarImg = getCanvasImage(radar);
+  if (radarImg) radarWrap.appendChild(radarImg);
+  page3.appendChild(radarWrap);
+  if (summary) {
+    const summaryWrap = document.createElement("div");
+    summaryWrap.className = "pdf-summary";
+    summaryWrap.appendChild(summary.cloneNode(true));
+    page3.appendChild(summaryWrap);
+  }
+  root.appendChild(page3);
+
+  return Array.from(root.querySelectorAll(".pdf-page"));
+}
+
+async function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
 
-  const margin = 10;
-  const width = 190;
-
   const capture = async (el) => {
-    const canvas = await html2canvas(el, {
+    return await html2canvas(el, {
       scale: 2,
       useCORS: true,
       backgroundColor: "#ffffff"
     });
-    return canvas;
   };
 
-  // PAGE 1
-  const top = document.createElement("div");
-  top.appendChild(document.querySelector(".app-header").cloneNode(true));
-  top.appendChild(document.querySelector(".top-cards").cloneNode(true));
+  const pages = buildPdfPages();
 
-  document.body.appendChild(top);
-  const canvas1 = await capture(top);
-  document.body.removeChild(top);
-
-  const h1 = (canvas1.height * width) / canvas1.width;
-  pdf.addImage(canvas1.toDataURL("image/png"), "PNG", margin, margin, width, h1);
-
-  // PAGE 2 BAR
-  pdf.addPage();
-  const barCanvas = await html2canvas(document.getElementById("bar"), { scale: 2 });
-
-  let barHeight = (barCanvas.height * width) / barCanvas.width;
-  if (barHeight > 250) barHeight = 250;
-
-  const yBar = (297 - barHeight) / 2;
-  pdf.addImage(barCanvas.toDataURL("image/png"), "PNG", margin, yBar, width, barHeight);
-
-  // PAGE 3 RADAR (SQUARE)
-  pdf.addPage();
-  const radarCanvas = await html2canvas(document.getElementById("radar"), { scale: 2 });
-
-  const size = 160;
-  const x = (210 - size) / 2;
-  const y = 20;
-
-  
-pdf.addImage(radarCanvas.toDataURL("image/png"), "PNG", x, y, size, size);
-
-  
-  // ===== SUMMARY CARDS (RESTORED)
-  const summary = document.querySelector(".results-cards");
-  if (summary) {
-    const summaryCanvas = await capture(summary);
-
-    let summaryHeight = (summaryCanvas.height * width) / summaryCanvas.width;
-    if (summaryHeight > 100) summaryHeight = 100;
-
-    pdf.addImage(
-      summaryCanvas.toDataURL("image/png"),
-      "PNG",
-      margin,
-      180,
-      width,
-      summaryHeight
-    );
+  for (let idx = 0; idx < pages.length; idx++) {
+    const canvas = await capture(pages[idx]);
+    const imgData = canvas.toDataURL("image/png");
+    const pageWidth = 210;
+    const pageHeight = 297;
+    if (idx > 0) pdf.addPage();
+    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
   }
-pdf.save("Spiritual_Gifts_Results.pdf");
+
+  pdf.save("Spiritual_Gifts_Results.pdf");
 }
 
-window.downloadPDF = downloadPDF_clean;
-
 </script>
-
 </html>
